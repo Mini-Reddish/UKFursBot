@@ -17,18 +17,29 @@ public class SetChannelForCommand : ISlashCommand<SetChannelForCommandParameters
     public async Task Execute(UKFursBotDbContext context, SocketSlashCommand socketSlashCommand)
     {
         var botConfiguration = context.BotConfigurations.FirstOrDefault();
+        bool isCreating = false;
         if (botConfiguration == null)
         {
-            await context.BotConfigurations.AddAsync(new BotConfiguration()
-            {
-                AnnouncementChannelId = CommandParameters.Channel.Id
-            });
+            var result = await context.BotConfigurations.AddAsync(new BotConfiguration());
+            botConfiguration = result.Entity;
+            isCreating = true;
         }
-        else
+
+        switch (CommandParameters.MessageType)
         {
-            botConfiguration.AnnouncementChannelId = CommandParameters.Channel.Id;
+            case AdminMessageTypes.Announcements:
+                botConfiguration.AnnouncementChannelId = CommandParameters.Channel.Id;
+                break;
+            case AdminMessageTypes.ErrorLogging:
+                botConfiguration.ErrorLoggingChannelId = CommandParameters.Channel.Id;
+                break;
+        }
+
+        if (isCreating == false)
+        {
             context.BotConfigurations.Update(botConfiguration);
         }
+        
     }
     
     public SetChannelForCommandParameters CommandParameters { get; set; }

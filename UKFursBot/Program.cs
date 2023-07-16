@@ -53,6 +53,7 @@ class Program
 
     private async Task ClientOnSlashCommandExecuted(SocketSlashCommand arg)
     {
+        await arg.RespondAsync("Request Received!  I'm going to do my best!");
         var command = _services.GetServices<ISlashCommand>().FirstOrDefault(x =>
         {
             var commandNameAttribute = x.GetType().GetCustomAttribute<CommandNameAttribute>();
@@ -71,7 +72,7 @@ class Program
 
         await context.SaveChangesAsync();
         
-        await arg.RespondAsync("All good!");
+       
     }
 
     private async Task ClientOnGuildAvailable(SocketGuild guild)

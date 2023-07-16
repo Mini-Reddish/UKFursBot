@@ -10,11 +10,14 @@ namespace UKFursBot.Commands.Ban;
 [CommandDescription("Ban the specified user, immediately or the next time they join if they have already left.")]
 public class BanCommand : ISlashCommand<BanCommandParameters>
 {
-    private readonly DiscordSocketClient _client;
 
-    public BanCommand(DiscordSocketClient client)
+    private readonly DiscordSocketClient _client;
+    private readonly SocketMessageChannelManager _socketMessageChannelManager;
+
+    public BanCommand(DiscordSocketClient client, SocketMessageChannelManager socketMessageChannelManager)
     {
         _client = client;
+        _socketMessageChannelManager = socketMessageChannelManager;
     }
     public void MapSocketSlashCommandToParameters(SocketSlashCommand socketSlashCommand)
     {
@@ -30,7 +33,7 @@ public class BanCommand : ISlashCommand<BanCommandParameters>
         }
         catch (Exception e)
         {
-            await socketSlashCommand.Channel.SendLoggingErrorMessageAsync("Unable to DM User", e);
+            await _socketMessageChannelManager.SendLoggingErrorMessageAsync("Unable to DM User", e);
             //Log that we failed to send a DM and why if needed.
         }
 
@@ -40,7 +43,7 @@ public class BanCommand : ISlashCommand<BanCommandParameters>
         }
         catch (Exception e)
         {
-            await socketSlashCommand.Channel.SendLoggingErrorMessageAsync("Unable to Ban User", e);
+            await _socketMessageChannelManager.SendLoggingErrorMessageAsync("Unable to Ban User", e);
         }
         //Log action in mod log channel
     }

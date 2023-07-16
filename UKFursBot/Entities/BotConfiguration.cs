@@ -8,4 +8,5 @@ public class BotConfiguration
     
     public virtual long Id { get; set; }
     public virtual ulong AnnouncementChannelId { get; set; }
+    public virtual ulong ErrorLoggingChannelId { get; set; }
 }

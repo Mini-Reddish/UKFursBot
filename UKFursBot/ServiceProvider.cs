@@ -24,6 +24,7 @@ public static class ServiceProvider
             service.AddDbContext<UKFursBotDbContext>();
             service.AddDiscordClient();
             service.AddSingletonOfType<ISlashCommand>();
+            service.AddSingleton<SocketMessageChannelManager>();
             
             _instance = service.BuildServiceProvider();
         }
