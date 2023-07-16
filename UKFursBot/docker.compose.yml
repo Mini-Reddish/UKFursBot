@@ -1,0 +1,19 @@
+﻿version: "3.9"
+services:
+        db:
+                image: "postgres"
+                environment:
+                - POSTGRES_USER=UKFursBot
+                - POSTGRES_PASSWORD=${DB_PASSWORD}
+                - PGPORT=5435
+                ports:
+                - "5435:5435"
+        site:
+                build: .
+                ports:
+                - "8000"
+                environment:
+                        "ConnectionStrings:db" : "Server=db:5435;Database=UKFursBot;User ID=UKFursBot;Password=${DB_PASSWORD};Enlist=true;"
+                        "AuthToken" : "${AUTH_TOKEN}"
+                links:
+                        - "db"

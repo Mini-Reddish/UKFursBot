@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UKFursBot", "UKFursBot\UKFursBot.csproj", "{FC233298-5B90-4A64-AB64-1744C5C9E6B7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configuration", "Configuration", "{AC82780D-207B-4182-B60A-D3C04E770909}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FC233298-5B90-4A64-AB64-1744C5C9E6B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC233298-5B90-4A64-AB64-1744C5C9E6B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC233298-5B90-4A64-AB64-1744C5C9E6B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC233298-5B90-4A64-AB64-1744C5C9E6B7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
