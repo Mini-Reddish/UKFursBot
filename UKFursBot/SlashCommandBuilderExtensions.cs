@@ -41,6 +41,23 @@ public static class SlashCommandBuilderExtensions
                   builder.AddOption(name, ApplicationCommandOptionType.Channel, description,  isRequired: isRequired);
             }
 
+            if (propertyInfo.PropertyType == typeof(SocketGuildUser))
+            {
+                builder.AddOption(name, ApplicationCommandOptionType.User, description, isRequired);
+            }
+
+            if (propertyInfo.PropertyType.IsEnum)
+            {
+                var choices = new List<ApplicationCommandOptionChoiceProperties>();
+                var type = propertyInfo.PropertyType;
+                var enumValues = type.GetEnumValues();
+                foreach (var enumValue in enumValues)
+                {
+                   choices.Add(new ApplicationCommandOptionChoiceProperties(){Name = enumValue.ToString(), Value = enumValue.GetHashCode().ToString()});
+                }
+                builder.AddOption(name, ApplicationCommandOptionType.String, description, isRequired, choices: choices.ToArray());
+            }
+
           
 
         }

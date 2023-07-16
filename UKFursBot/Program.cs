@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -33,13 +34,8 @@ class Program
     private async Task MainAsync()
     {
         var config = _services.GetRequiredService<IConfiguration>();
+        var client = _services.GetRequiredService<DiscordSocketClient>();
         
-        var client = new DiscordSocketClient(new DiscordSocketConfig()
-        {
-            LogLevel = LogSeverity.Info,
-            MessageCacheSize = 100
-        });
-
         await client.LoginAsync(TokenType.Bot, config["AuthToken"]);
         await client.StartAsync();
 
@@ -71,7 +67,7 @@ class Program
             return;
         }
         command.MapSocketSlashCommandToParameters(arg);
-        await command.Execute(context);
+        await command.Execute(context, arg);
 
         await context.SaveChangesAsync();
         

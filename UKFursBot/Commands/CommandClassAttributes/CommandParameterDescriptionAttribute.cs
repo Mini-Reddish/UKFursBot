@@ -8,12 +8,3 @@ public class CommandParameterDescriptionAttribute : Attribute
         Description = description;
     }
 }
-
-public class CommandParameterRequiredAttribute : Attribute
-{
-    public bool IsRequired { get; init; }
-    public CommandParameterRequiredAttribute(bool isRequired)
-    {
-        IsRequired = isRequired;
-    }
-}

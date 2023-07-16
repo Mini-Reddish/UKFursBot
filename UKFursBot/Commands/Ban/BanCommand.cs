@@ -1,4 +1,6 @@
-﻿using Discord.WebSocket;
+﻿using System.Reflection;
+using Discord;
+using Discord.WebSocket;
 using UKFursBot.Commands.CommandClassAttributes;
 using UKFursBot.Context;
 
@@ -8,14 +10,39 @@ namespace UKFursBot.Commands.Ban;
 [CommandDescription("Ban the specified user, immediately or the next time they join if they have already left.")]
 public class BanCommand : ISlashCommand<BanCommandParameters>
 {
+    private readonly DiscordSocketClient _client;
+
+    public BanCommand(DiscordSocketClient client)
+    {
+        _client = client;
+    }
     public void MapSocketSlashCommandToParameters(SocketSlashCommand socketSlashCommand)
     {
-        throw new NotImplementedException();
+        CommandParameters = socketSlashCommand.Data.MapDataToType<BanCommandParameters>();
     }
 
-    public async Task Execute(UKFursBotDbContext context)
+    public async Task Execute(UKFursBotDbContext context, SocketSlashCommand socketSlashCommand)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var dmChannel = await CommandParameters.User.CreateDMChannelAsync();
+            await dmChannel.SendMessageAsync(CommandParameters.BanMessage);
+        }
+        catch (Exception e)
+        {
+            await socketSlashCommand.Channel.SendLoggingErrorMessageAsync("Unable to DM User", e);
+            //Log that we failed to send a DM and why if needed.
+        }
+
+        try
+        {
+            await CommandParameters.User.BanAsync(0, CommandParameters.BanMessage);
+        }
+        catch (Exception e)
+        {
+            await socketSlashCommand.Channel.SendLoggingErrorMessageAsync("Unable to Ban User", e);
+        }
+        //Log action in mod log channel
     }
 
     public BanCommandParameters CommandParameters { get; set; }
@@ -23,4 +50,10 @@ public class BanCommand : ISlashCommand<BanCommandParameters>
 
 public class BanCommandParameters   
 {
+    [CommandParameterRequired]
+    public SocketGuildUser User { get; set; }
+    
+    
+    [CommandParameterRequired]
+    public string BanMessage { get; set; }
 }

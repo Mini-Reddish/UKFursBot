@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using Discord;
+using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using UKFursBot.Commands;
@@ -15,15 +17,12 @@ public static class ServiceProvider
     {
         if (_instance == null)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appSettings.json", optional: false)
-                .AddEnvironmentVariables();
-            
-            IConfiguration configuration = builder.Build();
+           
             var service = new ServiceCollection();
-            service.AddSingleton(configuration);
+            
+            service.AddConfiguration();
             service.AddDbContext<UKFursBotDbContext>();
+            service.AddDiscordClient();
             service.AddSingletonOfType<ISlashCommand>();
             
             _instance = service.BuildServiceProvider();
@@ -37,7 +36,28 @@ public static class ServiceProvider
 
 static class ServiceCollectionExtensions
 {
-    public static ServiceCollection AddSingletonOfType<T>(this ServiceCollection service)
+    public static void AddConfiguration(this ServiceCollection service)
+    {
+        var builder = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appSettings.json", optional: false)
+            .AddEnvironmentVariables();
+            
+        IConfiguration configuration = builder.Build();
+        service.AddSingleton(configuration);
+    }
+
+    public static void AddDiscordClient(this ServiceCollection service)
+    {
+        var client = new DiscordSocketClient(new DiscordSocketConfig()
+        {
+            LogLevel = LogSeverity.Info,
+            MessageCacheSize = 100
+        });
+
+        service.AddSingleton(client);
+    }
+    public static void AddSingletonOfType<T>(this ServiceCollection service)
     {
         var currentAssembly = Assembly.GetExecutingAssembly();
 
@@ -47,6 +67,5 @@ static class ServiceCollectionExtensions
         {
             service.AddSingleton(typeof(T), type);
         }
-        return service;
     }
 }

@@ -19,7 +19,7 @@ public class EchoCommand : ISlashCommand<EchoCommandParameters>
         };
     }
 
-    public async Task Execute(UKFursBotDbContext context)
+    public async Task Execute(UKFursBotDbContext context,  SocketSlashCommand socketSlashCommand)
     {
         await CommandParameters.Channel.SendMessageAsync(CommandParameters.EchoResponseString);
     }

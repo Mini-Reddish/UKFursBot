@@ -13,7 +13,7 @@ public class AddNoteCommand : ISlashCommand<AddNoteCommandParameters>
         throw new NotImplementedException();
     }
 
-    public async Task Execute(UKFursBotDbContext context)
+    public async Task Execute(UKFursBotDbContext context,  SocketSlashCommand socketSlashCommand)
     {
         throw new NotImplementedException();
     }
