@@ -18,6 +18,11 @@ public class AddNoteCommand : ISlashCommand<AddNoteCommandParameters>
         throw new NotImplementedException();
     }
 
+    public async Task OnSuccessfulCommandCompletion(UKFursBotDbContext context, SocketSlashCommand socketSlashCommand)
+    {
+        //TODO:  Send message to some logging channel detailing that a user note was added by whom.
+    }
+
     public AddNoteCommandParameters CommandParameters { get; set; }
 }
 

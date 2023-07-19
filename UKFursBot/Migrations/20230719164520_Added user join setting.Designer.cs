@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UKFursBot.Context;
@@ -11,9 +12,11 @@ using UKFursBot.Context;
 namespace UKFursBot.Migrations
 {
     [DbContext(typeof(UKFursBotDbContext))]
-    partial class UKFursBotContextModelSnapshot : ModelSnapshot
+    [Migration("20230719164520_Added user join setting")]
+    partial class Addeduserjoinsetting
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

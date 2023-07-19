@@ -48,6 +48,11 @@ public class BanCommand : ISlashCommand<BanCommandParameters>
         //Log action in mod log channel
     }
 
+    public async Task OnSuccessfulCommandCompletion(UKFursBotDbContext context, SocketSlashCommand socketSlashCommand)
+    {
+        //TODO:  Send message detailing that a user was banned, by who and when etc.
+    }
+
     public BanCommandParameters CommandParameters { get; set; }
 }
 

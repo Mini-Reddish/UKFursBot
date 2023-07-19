@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using UKFursBot.Commands;
 using UKFursBot.Commands.CommandClassAttributes;
 using UKFursBot.Context;
+using UKFursBot.UserJoined;
 
 namespace UKFursBot;
 
@@ -35,14 +36,41 @@ class Program
     {
         var config = _services.GetRequiredService<IConfiguration>();
         var client = _services.GetRequiredService<DiscordSocketClient>();
-        
-        await client.LoginAsync(TokenType.Bot, config["AuthToken"]);
-        await client.StartAsync();
+
+        client.Log += LogAsync;
+        try
+        {
+            await client.LoginAsync(TokenType.Bot, config["AuthToken"]);
+            await client.StartAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            throw;
+        }
 
         client.GuildAvailable += ClientOnGuildAvailable;
         client.SlashCommandExecuted += ClientOnSlashCommandExecuted;
         client.ModalSubmitted += ClientOnModalSubmitted;
+        client.UserJoined += ClientOnUserJoined;
+        
         await Task.Delay(-1);
+    }
+
+    private Task LogAsync(LogMessage arg)
+    {
+        Console.WriteLine(arg.Message);
+        return Task.CompletedTask;
+    }
+
+    private async Task ClientOnUserJoined(SocketGuildUser arg)
+    {
+        var onUserJoinedHandlers = _services.GetServices<IUserJoinedHandler>();
+        
+        foreach (var userJoinedHandler in onUserJoinedHandlers)
+        {
+            await userJoinedHandler.HandleUserJoined(arg);
+        }
     }
 
     private async Task ClientOnModalSubmitted(SocketModal arg)
@@ -69,10 +97,9 @@ class Program
         }
         command.MapSocketSlashCommandToParameters(arg);
         await command.Execute(context, arg);
-
         await context.SaveChangesAsync();
-        
-       
+        await command.OnSuccessfulCommandCompletion(context, arg);
+
     }
 
     private async Task ClientOnGuildAvailable(SocketGuild guild)

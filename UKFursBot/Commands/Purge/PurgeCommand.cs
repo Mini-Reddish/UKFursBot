@@ -18,6 +18,11 @@ public class PurgeCommand : ISlashCommand<PurgeCommandParameters>
         throw new NotImplementedException();
     }
 
+    public async Task OnSuccessfulCommandCompletion(UKFursBotDbContext context, SocketSlashCommand socketSlashCommand)
+    {
+        //TODO:  Log that users messages were purged.
+    }
+
     public PurgeCommandParameters CommandParameters { get; set; }
 }
 

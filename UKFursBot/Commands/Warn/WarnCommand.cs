@@ -18,6 +18,11 @@ public class WarnCommand : ISlashCommand<WarnCommandParameters>
         throw new NotImplementedException();
     }
 
+    public async Task OnSuccessfulCommandCompletion(UKFursBotDbContext context, SocketSlashCommand socketSlashCommand)
+    {
+        //TODO: Log out that a user was warned.
+    }
+
     public WarnCommandParameters CommandParameters { get; set; }
 }
 

@@ -4,5 +4,5 @@ public enum AdminMessageTypes
 {
     Announcements,
     ErrorLogging,
-    
+    UserJoinLog
 }

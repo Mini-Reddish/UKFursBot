@@ -1,4 +1,5 @@
-﻿using Discord.WebSocket;
+﻿using Discord;
+using Discord.WebSocket;
 using UKFursBot.Commands.CommandClassAttributes;
 using UKFursBot.Context;
 
@@ -22,5 +23,10 @@ public class EchoCommand : ISlashCommand<EchoCommandParameters>
     public async Task Execute(UKFursBotDbContext context,  SocketSlashCommand socketSlashCommand)
     {
         await CommandParameters.Channel.SendMessageAsync(CommandParameters.EchoResponseString);
+    }
+
+    public async Task OnSuccessfulCommandCompletion(UKFursBotDbContext context, SocketSlashCommand socketSlashCommand)
+    {
+        //TODO:  Nothing.
     }
 }

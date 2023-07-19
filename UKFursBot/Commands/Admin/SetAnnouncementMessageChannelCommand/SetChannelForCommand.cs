@@ -20,7 +20,10 @@ public class SetChannelForCommand : ISlashCommand<SetChannelForCommandParameters
         bool isCreating = false;
         if (botConfiguration == null)
         {
-            var result = await context.BotConfigurations.AddAsync(new BotConfiguration());
+            var result = await context.BotConfigurations.AddAsync(new BotConfiguration()
+            {
+                GuildId = socketSlashCommand.GuildId.GetValueOrDefault()
+            });
             botConfiguration = result.Entity;
             isCreating = true;
         }
@@ -33,16 +36,24 @@ public class SetChannelForCommand : ISlashCommand<SetChannelForCommandParameters
             case AdminMessageTypes.ErrorLogging:
                 botConfiguration.ErrorLoggingChannelId = CommandParameters.Channel.Id;
                 break;
+            case AdminMessageTypes.UserJoinLog:
+                botConfiguration.UserJoinLoggingChannelId = CommandParameters.Channel.Id;
+                break;
         }
 
         if (isCreating == false)
         {
             context.BotConfigurations.Update(botConfiguration);
         }
-        
     }
-    
+
+    public async Task OnSuccessfulCommandCompletion(UKFursBotDbContext context, SocketSlashCommand socketSlashCommand)
+    {
+        await socketSlashCommand.Channel.SendMessageAsync($"I have set the {CommandParameters.MessageType} messages to be sent to <#{CommandParameters.Channel.Id}>");
+    }
+
     public SetChannelForCommandParameters CommandParameters { get; set; }
+
 }
 
 public class SetChannelForCommandParameters     

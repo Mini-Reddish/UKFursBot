@@ -7,6 +7,7 @@ public interface ISlashCommand
 {
     void MapSocketSlashCommandToParameters(SocketSlashCommand socketSlashCommand);
     Task Execute(UKFursBotDbContext context, SocketSlashCommand socketSlashCommand);
+    Task OnSuccessfulCommandCompletion(UKFursBotDbContext context, SocketSlashCommand socketSlashCommand);
 }
 
 public interface ISlashCommand<T> : ISlashCommand

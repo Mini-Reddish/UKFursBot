@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using UKFursBot.Commands;
 using UKFursBot.Context;
+using UKFursBot.UserJoined;
 
 namespace UKFursBot;
 
@@ -24,6 +25,7 @@ public static class ServiceProvider
             service.AddDbContext<UKFursBotDbContext>();
             service.AddDiscordClient();
             service.AddSingletonOfType<ISlashCommand>();
+            service.AddSingletonOfType<IUserJoinedHandler>();
             service.AddSingleton<SocketMessageChannelManager>();
             
             _instance = service.BuildServiceProvider();
@@ -39,9 +41,11 @@ static class ServiceCollectionExtensions
 {
     public static void AddConfiguration(this ServiceCollection service)
     {
+        var environmentName = Environment.GetEnvironmentVariable("ENVIRONMENT");
         var builder = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appSettings.json", optional: false)
+            .AddJsonFile($"appSettings.{environmentName}.json", optional: true)
             .AddEnvironmentVariables();
             
         IConfiguration configuration = builder.Build();
@@ -52,7 +56,9 @@ static class ServiceCollectionExtensions
     {
         var client = new DiscordSocketClient(new DiscordSocketConfig()
         {
-            LogLevel = LogSeverity.Info,
+            LogLevel = LogSeverity.Debug,
+            LogGatewayIntentWarnings = true,
+            GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers | GatewayIntents.GuildBans,
             MessageCacheSize = 100
         });
 
