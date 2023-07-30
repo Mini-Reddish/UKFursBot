@@ -12,6 +12,6 @@ public class UserNote
     public virtual ulong ForgivenBy { get; set; }
     public virtual ulong GuildId { get; set; }
     public virtual ulong ModeratorId { get; set; }
-    public virtual string Reason { get; set; }
+    public virtual string Reason { get; set; } = string.Empty;
     public virtual ulong UserId { get; set; }
 }

@@ -1,8 +1,7 @@
-using Discord;
 using Discord.WebSocket;
 using UKFursBot.Context;
 
-namespace UKFursBot.UserJoined;
+namespace UKFursBot.Features.UserGreeting;
 
 public class LogUserJoined : IUserJoinedHandler
 {
@@ -18,7 +17,7 @@ public class LogUserJoined : IUserJoinedHandler
     }
     public async Task HandleUserJoined(SocketGuildUser socketGuildUser)
     {
-        var userJoinLogChannelId = _dbContext.BotConfigurations.FirstOrDefault(x => x.GuildId == socketGuildUser.Guild.Id)?.UserJoinLoggingChannelId;
+        var userJoinLogChannelId = _dbContext.BotConfigurations.FirstOrDefault()?.UserJoinLoggingChannelId;
 
         if (userJoinLogChannelId.HasValue == false || userJoinLogChannelId.Value == 0)
         {

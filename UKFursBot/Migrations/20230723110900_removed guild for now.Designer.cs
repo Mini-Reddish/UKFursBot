@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UKFursBot.Context;
@@ -11,9 +12,11 @@ using UKFursBot.Context;
 namespace UKFursBot.Migrations
 {
     [DbContext(typeof(UKFursBotDbContext))]
-    partial class UKFursBotContextModelSnapshot : ModelSnapshot
+    [Migration("20230723110900_removed guild for now")]
+    partial class removedguildfornow
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,35 +44,6 @@ namespace UKFursBot.Migrations
                     b.HasKey("MessageId");
 
                     b.ToTable("AnnouncementMessages");
-                });
-
-            modelBuilder.Entity("UKFursBot.Entities.BanLog", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("DateAdded")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal>("ModID")
-                        .HasColumnType("numeric(20,0)");
-
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("UserID")
-                        .HasColumnType("numeric(20,0)");
-
-                    b.Property<bool>("WasSentToUser")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("BanLogs");
                 });
 
             modelBuilder.Entity("UKFursBot.Entities.BanOnJoin", b =>
@@ -109,14 +83,8 @@ namespace UKFursBot.Migrations
                     b.Property<decimal>("ErrorLoggingChannelId")
                         .HasColumnType("numeric(20,0)");
 
-                    b.Property<decimal>("GuildId")
-                        .HasColumnType("numeric(20,0)");
-
                     b.Property<long>("MinutesThresholdForMessagesBeforeEditsAreSuspicious")
                         .HasColumnType("bigint");
-
-                    b.Property<decimal>("ModerationLoggingChannel")
-                        .HasColumnType("numeric(20,0)");
 
                     b.Property<decimal>("UserJoinLoggingChannelId")
                         .HasColumnType("numeric(20,0)");
@@ -237,9 +205,6 @@ namespace UKFursBot.Migrations
 
                     b.Property<decimal>("UserId")
                         .HasColumnType("numeric(20,0)");
-
-                    b.Property<bool>("WasSentToUser")
-                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 

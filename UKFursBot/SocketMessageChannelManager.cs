@@ -17,16 +17,17 @@ public class SocketMessageChannelManager
     
     public async Task SendLoggingWarningMessageAsync(string message)
     {
-        var configuration = _dbContext.BotConfigurations.FirstOrDefault();
-        if(configuration == null)
-            return; //TODO: some other form of logging to inform people that it's not set!
+        var configuration = _dbContext.BotConfigurations.First();
 
         if (await _socketClient.GetChannelAsync(configuration.ErrorLoggingChannelId) is not ITextChannel loggingChannel)
-            return; //TODO: some other form of logging to inform people that it's set to an incorrect type of channel.
-        
+            return; 
+
+        var messageContents = new RichTextBuilder()
+            .AddHeading1("Warning!")
+            .AddText(message);
         var embedBuilder = new EmbedBuilder()
         {
-            Description = message,
+            Description = messageContents.Build(),
             Color = Color.Orange,
             
         };
@@ -36,20 +37,38 @@ public class SocketMessageChannelManager
     
     public async Task SendLoggingErrorMessageAsync(string message, Exception exception)
     {
-        var configuration = _dbContext.BotConfigurations.FirstOrDefault();
-        if(configuration == null)
-            return; //TODO: some other form of logging to inform people that it's not set!
-
+        var configuration = _dbContext.BotConfigurations.First();
+        
         if (await _socketClient.GetChannelAsync(configuration.ErrorLoggingChannelId) is not ITextChannel loggingChannel)
-            return; //TODO: some other form of logging to inform people that it's set to an incorrect type of channel.
+            return; 
+
+        var messageContents = new RichTextBuilder()
+            .AddHeading1("Warning!")
+            .AddText(message)
+            .AddHeading2("Exception:")
+            .AddText(exception.Message);
         
         var embedBuilder = new EmbedBuilder()
         {
-            Description = $"{message}, The exception was {exception.Message} ",
+            Description = messageContents.Build(),
             Color = Color.Red,
             
         };
 
         await loggingChannel.SendMessageAsync(string.Empty, false, embedBuilder.Build());
+    }
+
+    public async Task SendModerationLoggingMessageAsync(Embed embed)
+    {
+        var configuration = _dbContext.BotConfigurations.First();
+
+        if (await _socketClient.GetChannelAsync(configuration.ModerationLoggingChannel) is not ITextChannel
+            loggingChannel)
+        {
+            await SendLoggingWarningMessageAsync("Moderation Logging channel is not set");
+            return;
+        }
+
+        await loggingChannel.SendMessageAsync(embed: embed);
     }
 }

@@ -6,6 +6,6 @@ public class AnnouncementMessage
 {
     [Key]
     public virtual long MessageId { get; set; }
-    public virtual string MessageContent { get; set; }
-    public virtual string MessagePurpose { get; set; }
+    public virtual string MessageContent { get; set; } = String.Empty;
+    public virtual string MessagePurpose { get; set; } = String.Empty;
 }

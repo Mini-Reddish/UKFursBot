@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using UKFursBot.Entities;
 
@@ -17,7 +15,8 @@ public partial class UKFursBotDbContext : DbContext
     public virtual DbSet<BanOnJoin> BansOnJoin { get; set; }
     public virtual DbSet<ModMail> ModMails { get; set; }
     public virtual DbSet<ErrorLogging> ErrorLogging { get; set; }
-    
+    public DbSet<BanLog> BanLogs { get; set; }
+
     public UKFursBotDbContext()
     {
     }

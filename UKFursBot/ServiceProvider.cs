@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using UKFursBot.Commands;
 using UKFursBot.Context;
-using UKFursBot.UserJoined;
+using UKFursBot.Features.UserModeration;
 
 namespace UKFursBot;
 
@@ -26,7 +26,11 @@ public static class ServiceProvider
             service.AddDiscordClient();
             service.AddSingletonOfType<ISlashCommand>();
             service.AddSingletonOfType<IUserJoinedHandler>();
+            service.AddSingletonOfType<IMessageEditedHandler>();
+            service.AddSingletonOfType<IUserVoiceChannelChangedHandler>();
+            service.AddSingletonOfType<IUserMessageReceivedHandler>();
             service.AddSingleton<SocketMessageChannelManager>();
+            service.AddSingleton<BotGuildUsers>();
             
             _instance = service.BuildServiceProvider();
         }
@@ -58,17 +62,31 @@ static class ServiceCollectionExtensions
         {
             LogLevel = LogSeverity.Debug,
             LogGatewayIntentWarnings = true,
-            GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers | GatewayIntents.GuildBans,
+            GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers | GatewayIntents.GuildBans | GatewayIntents.MessageContent | GatewayIntents.Guilds,
             MessageCacheSize = 100
         });
 
         service.AddSingleton(client);
     }
+
+    public static void AddCommands(this ServiceCollection service)
+    {
+       var currentAssembly = Assembly.GetExecutingAssembly();
+
+        var types = currentAssembly.ExportedTypes.Where(x =>
+            x is { IsClass: true, IsPublic: true, BaseType: not null, BaseType.IsGenericType: true } && 
+            x.BaseType.GetGenericTypeDefinition().IsAssignableTo(typeof(BaseCommand<>))).ToList();
+
+        foreach (var type in types)
+        {
+            service.AddSingleton(typeof(BaseCommand<>).MakeGenericType(type), type);
+        }
+    }
     public static void AddSingletonOfType<T>(this ServiceCollection service)
     {
         var currentAssembly = Assembly.GetExecutingAssembly();
 
-        var types = currentAssembly.ExportedTypes.Where(x => x is { IsClass: true, IsPublic: true } && x.GetInterfaces().Any(y=> y == typeof(T))).ToList();
+        var types = currentAssembly.ExportedTypes.Where(x => x is { IsClass: true, IsPublic: true, IsAbstract: false } && x.GetInterfaces().Any(y=> y == typeof(T))).ToList();
 
         foreach (var type in types)
         {

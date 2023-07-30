@@ -28,14 +28,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Repositories\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <None Update="appSettings.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-      <None Update="appSettings.Development.json">
+      <None Update="appSettings.Debug.json">
         <DependentUpon>appSettings.json</DependentUpon>
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>

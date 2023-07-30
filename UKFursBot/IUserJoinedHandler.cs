@@ -1,6 +1,6 @@
 using Discord.WebSocket;
 
-namespace UKFursBot.UserJoined;
+namespace UKFursBot;
 
 public interface IUserJoinedHandler
 {

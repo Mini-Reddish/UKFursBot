@@ -1,9 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Reflection;
+﻿using System.Reflection;
 using Discord;
-using Discord.Interactions.Builders;
 using Discord.WebSocket;
-using UKFursBot.Commands;
 using UKFursBot.Commands.CommandClassAttributes;
 
 namespace UKFursBot;
@@ -12,12 +9,12 @@ public static class SlashCommandBuilderExtensions
 {
     public static Discord.SlashCommandBuilder BuildOptionsFromParameters(this Discord.SlashCommandBuilder builder, ISlashCommand command)
     {
-        var slashCommandInterfaceType = command.GetType().GetInterfaces().FirstOrDefault(x => x.GetGenericTypeDefinition() == typeof(ISlashCommand<>));
-        if (slashCommandInterfaceType == null)
-            return builder;
+        var commandBaseType = command.GetType().BaseType;
+        if (commandBaseType == null)
+            throw new Exception($"Cannot get base type.  All commands must inherit {typeof(BaseCommand<>).FullName}");
         
-        var commandPropertiesType = slashCommandInterfaceType.GetGenericArguments().FirstOrDefault();
-        if (commandPropertiesType == null || commandPropertiesType == typeof(SocketSlashCommand))
+        var commandPropertiesType = commandBaseType.GetGenericArguments().FirstOrDefault();
+        if (commandPropertiesType == null)
             return builder;
 
         var commandProperties = commandPropertiesType.GetProperties();
@@ -44,6 +41,11 @@ public static class SlashCommandBuilderExtensions
             if (propertyInfo.PropertyType == typeof(SocketGuildUser))
             {
                 builder.AddOption(name, ApplicationCommandOptionType.User, description, isRequired);
+            }
+
+            if (propertyInfo.PropertyType == typeof(bool))
+            {
+                builder.AddOption(name, ApplicationCommandOptionType.Boolean, description, isRequired);
             }
 
             if (propertyInfo.PropertyType.IsEnum)

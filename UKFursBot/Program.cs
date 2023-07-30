@@ -1,20 +1,19 @@
 ﻿using System.Reflection;
 using Discord;
-using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using UKFursBot.Commands;
 using UKFursBot.Commands.CommandClassAttributes;
 using UKFursBot.Context;
-using UKFursBot.UserJoined;
+using UKFursBot.Entities;
 
 namespace UKFursBot;
 
 class Program
 {
     private static IServiceProvider _services = null!;
+    private BotGuildUsers botGuildUsers;
 
     public static int Main(string[] args)
     {
@@ -36,6 +35,7 @@ class Program
     {
         var config = _services.GetRequiredService<IConfiguration>();
         var client = _services.GetRequiredService<DiscordSocketClient>();
+        botGuildUsers = _services.GetRequiredService<BotGuildUsers>();
 
         client.Log += LogAsync;
         try
@@ -53,8 +53,42 @@ class Program
         client.SlashCommandExecuted += ClientOnSlashCommandExecuted;
         client.ModalSubmitted += ClientOnModalSubmitted;
         client.UserJoined += ClientOnUserJoined;
-        
+        client.MessageUpdated += ClientOnMessageUpdated;
+        client.UserVoiceStateUpdated += ClientOnUserVoiceChannelChanged;
+        client.MessageReceived += ClientOnMessageReceived;
+
         await Task.Delay(-1);
+    }
+
+    private async Task ClientOnMessageReceived(SocketMessage message)
+    {
+        var userMessageReceivedHandlers = _services.GetServices<IUserMessageReceivedHandler>();
+
+        if(message is SocketUserMessage socketUserMessage)
+        foreach (var userMessageReceivedHandler in userMessageReceivedHandlers)
+        {
+            await userMessageReceivedHandler.HandleMessageReceived(socketUserMessage);
+        }
+    }
+
+    private async Task ClientOnUserVoiceChannelChanged(SocketUser user, SocketVoiceState previousVoiceState, SocketVoiceState currentVoiceState)
+    {
+        var userVoiceChannelChangedHandlers = _services.GetServices<IUserVoiceChannelChangedHandler>();
+
+        foreach (var userVoiceChannelChangedHandler in userVoiceChannelChangedHandlers)
+        {
+            await userVoiceChannelChangedHandler.HandleUserVoiceChannelChanged(user, previousVoiceState, currentVoiceState);
+        }
+    }
+
+    private async Task ClientOnMessageUpdated(Cacheable<IMessage, ulong> before, SocketMessage after, ISocketMessageChannel channel)
+    {
+        var messageUpdatedHandlers = _services.GetServices<IMessageEditedHandler>();
+
+        foreach (var messageUpdatedHandler in messageUpdatedHandlers)
+        {
+            await messageUpdatedHandler.HandleMessageUpdated(before, after, channel);
+        }
     }
 
     private Task LogAsync(LogMessage arg)
@@ -81,32 +115,35 @@ class Program
 
     private async Task ClientOnSlashCommandExecuted(SocketSlashCommand arg)
     {
-        await arg.RespondAsync("Request Received!  I'm going to do my best!");
         var command = _services.GetServices<ISlashCommand>().FirstOrDefault(x =>
         {
             var commandNameAttribute = x.GetType().GetCustomAttribute<CommandNameAttribute>();
             return string.Equals(commandNameAttribute?.Name, arg.CommandName, StringComparison.InvariantCultureIgnoreCase);
         });
-
-        var context = _services.GetRequiredService<UKFursBotDbContext>();
-
-        if (command == null)
+        
+        if (command?.GetType().BaseType == null)
         {
             //Log error that command implementation does not exist.  Should never happen by design.
             return;
         }
-        command.MapSocketSlashCommandToParameters(arg);
-        await command.Execute(context, arg);
-        await context.SaveChangesAsync();
-        await command.OnSuccessfulCommandCompletion(context, arg);
+        var commandParameters = arg.Data.MapDataToType(command.GetType().BaseType!.GetGenericArguments().First());
+
+        var methodInfo = command.GetType().GetMethod("Execute");
+        if (methodInfo != null)
+        {
+            await (Task) methodInfo.Invoke(command, new[] { arg, commandParameters })!;
+        }
+
 
     }
 
     private async Task ClientOnGuildAvailable(SocketGuild guild)
     {
-        await guild.DeleteApplicationCommandsAsync();
-        var commands = _services.GetServices<ISlashCommand>();
+        await InitialiseGuildBotConfigurationInDb(guild);
 
+        botGuildUsers.TryAdd(guild.Id, guild.CurrentUser);
+        var commands = _services.GetServices<ISlashCommand>();
+        var guildCommands = new List<ApplicationCommandProperties>();
         foreach (var slashCommand in commands)
         {
             try
@@ -123,14 +160,31 @@ class Program
                     .WithName(commandNameAttribute.Name.ToLowerInvariant())
                     .WithDescription(commandDescriptionAttribute.Description)
                     .BuildOptionsFromParameters(slashCommand)
+                    .WithDefaultPermission(false)
                     .Build();
-
-                await guild.CreateApplicationCommandAsync(guildCommand);
+                
+                guildCommands.Add(guildCommand);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
+        }
+        
+        await guild.BulkOverwriteApplicationCommandAsync(guildCommands.ToArray());
+    }
+
+    private static async Task InitialiseGuildBotConfigurationInDb(SocketGuild guild)
+    {
+        var dbContext = _services.GetRequiredService<UKFursBotDbContext>();
+        var guildBotConfiguration = dbContext.BotConfigurations.FirstOrDefault(x => x.GuildId == guild.Id);
+        if (guildBotConfiguration == null)
+        {
+            dbContext.BotConfigurations.Add(new BotConfiguration()
+            {
+                GuildId = guild.Id,
+            });
+            await dbContext.SaveChangesAsync();
         }
     }
 }

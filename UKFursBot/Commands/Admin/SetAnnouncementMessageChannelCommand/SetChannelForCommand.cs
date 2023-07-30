@@ -8,52 +8,59 @@ namespace UKFursBot.Commands.Admin.SetAnnouncementMessageChannelCommand;
 
 [CommandName("admin_set_channel_for")]
 [CommandDescription("Set the channel setting to output in the specified channel")]
-public class SetChannelForCommand : ISlashCommand<SetChannelForCommandParameters>
+public class SetChannelForCommand : BaseCommand<SetChannelForCommandParameters>
 {
-    public void MapSocketSlashCommandToParameters(SocketSlashCommand socketSlashCommand)
+    private readonly UKFursBotDbContext _dbContext;
+
+    public SetChannelForCommand(UKFursBotDbContext dbContext)
     {
-        CommandParameters = socketSlashCommand.Data.MapDataToType<SetChannelForCommandParameters>();
+        _dbContext = dbContext;
     }
-    public async Task Execute(UKFursBotDbContext context, SocketSlashCommand socketSlashCommand)
+    protected override async Task Implementation(SocketSlashCommand socketSlashCommand, SetChannelForCommandParameters commandParameters)
     {
-        var botConfiguration = context.BotConfigurations.FirstOrDefault();
+        var botConfiguration = _dbContext.BotConfigurations.FirstOrDefault();
         bool isCreating = false;
         if (botConfiguration == null)
         {
-            var result = await context.BotConfigurations.AddAsync(new BotConfiguration()
-            {
-                GuildId = socketSlashCommand.GuildId.GetValueOrDefault()
-            });
+            var result = await _dbContext.BotConfigurations.AddAsync(new BotConfiguration());
             botConfiguration = result.Entity;
             isCreating = true;
         }
 
-        switch (CommandParameters.MessageType)
+        switch (commandParameters.MessageType)
         {
             case AdminMessageTypes.Announcements:
-                botConfiguration.AnnouncementChannelId = CommandParameters.Channel.Id;
+                botConfiguration.AnnouncementChannelId = commandParameters.Channel.Id;
                 break;
             case AdminMessageTypes.ErrorLogging:
-                botConfiguration.ErrorLoggingChannelId = CommandParameters.Channel.Id;
+                botConfiguration.ErrorLoggingChannelId = commandParameters.Channel.Id;
                 break;
             case AdminMessageTypes.UserJoinLog:
-                botConfiguration.UserJoinLoggingChannelId = CommandParameters.Channel.Id;
+                botConfiguration.UserJoinLoggingChannelId = commandParameters.Channel.Id;
+                break;
+            case AdminMessageTypes.ModerationLog:
+                botConfiguration.ModerationLoggingChannel = commandParameters.Channel.Id;
                 break;
         }
 
         if (isCreating == false)
         {
-            context.BotConfigurations.Update(botConfiguration);
+            _dbContext.BotConfigurations.Update(botConfiguration);
         }
+
+        await _dbContext.SaveChangesAsync();
+        await socketSlashCommand.RespondAsync("Request Complete!");
+        var messageContents = new RichTextBuilder()
+            .AddHeading1("Config Changed")
+            .AddText($"I have set the {commandParameters.MessageType} messages to be sent to <#{commandParameters.Channel.Id}>");
+        
+        var embed = new EmbedBuilder()
+        {
+            Color = Color.Blue,
+            Description = messageContents.Build()
+        };
+        await socketSlashCommand.Channel.SendMessageAsync(embed: embed.Build());
     }
-
-    public async Task OnSuccessfulCommandCompletion(UKFursBotDbContext context, SocketSlashCommand socketSlashCommand)
-    {
-        await socketSlashCommand.Channel.SendMessageAsync($"I have set the {CommandParameters.MessageType} messages to be sent to <#{CommandParameters.Channel.Id}>");
-    }
-
-    public SetChannelForCommandParameters CommandParameters { get; set; }
-
 }
 
 public class SetChannelForCommandParameters     

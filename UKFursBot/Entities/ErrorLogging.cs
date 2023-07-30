@@ -2,7 +2,7 @@
 
 namespace UKFursBot.Entities;
 
-public partial class ErrorLogging
+public class ErrorLogging
 {
     [Key]
     public long Id { get; set; }
