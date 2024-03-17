@@ -15,6 +15,7 @@ public partial class UKFursBotDbContext : DbContext
     public virtual DbSet<BanOnJoin> BansOnJoin { get; set; }
     public virtual DbSet<ModMail> ModMails { get; set; }
     public virtual DbSet<ErrorLogging> ErrorLogging { get; set; }
+    public virtual DbSet<ModBanExemption> BanExemptions { get; set; }
     public DbSet<BanLog> BanLogs { get; set; }
 
     public UKFursBotDbContext()

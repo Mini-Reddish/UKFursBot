@@ -32,20 +32,21 @@ public static class SlashCommandBuilderExtensions
             {
                 builder.AddOption(name, ApplicationCommandOptionType.String, description, isRequired: isRequired);
             }
-
-            if (propertyInfo.PropertyType == typeof(SocketTextChannel))
+            else if (propertyInfo.PropertyType == typeof(SocketTextChannel))
             {
                   builder.AddOption(name, ApplicationCommandOptionType.Channel, description,  isRequired: isRequired);
             }
-
-            if (propertyInfo.PropertyType == typeof(SocketGuildUser))
+            else if (propertyInfo.PropertyType == typeof(SocketGuildUser))
             {
                 builder.AddOption(name, ApplicationCommandOptionType.User, description, isRequired);
             }
-
-            if (propertyInfo.PropertyType == typeof(bool))
+            else if (propertyInfo.PropertyType == typeof(bool))
             {
                 builder.AddOption(name, ApplicationCommandOptionType.Boolean, description, isRequired);
+            }
+            else if (propertyInfo.PropertyType == typeof(SocketRole))
+            {
+                builder.AddOption(name, ApplicationCommandOptionType.Role, description, isRequired);
             }
 
             if (propertyInfo.PropertyType.IsEnum)

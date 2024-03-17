@@ -65,10 +65,10 @@ class Program
         var userMessageReceivedHandlers = _services.GetServices<IUserMessageReceivedHandler>();
 
         if(message is SocketUserMessage socketUserMessage)
-        foreach (var userMessageReceivedHandler in userMessageReceivedHandlers)
-        {
-            await userMessageReceivedHandler.HandleMessageReceived(socketUserMessage);
-        }
+            foreach (var userMessageReceivedHandler in userMessageReceivedHandlers)
+            {
+                await userMessageReceivedHandler.HandleMessageReceived(socketUserMessage);
+            }
     }
 
     private async Task ClientOnUserVoiceChannelChanged(SocketUser user, SocketVoiceState previousVoiceState, SocketVoiceState currentVoiceState)

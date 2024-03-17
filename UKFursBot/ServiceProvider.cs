@@ -24,7 +24,7 @@ public static class ServiceProvider
             service.AddConfiguration();
             service.AddDbContext<UKFursBotDbContext>();
             service.AddDiscordClient();
-            service.AddSingletonOfType<ISlashCommand>();
+            service.AddTransientOfType<ISlashCommand>();
             service.AddSingletonOfType<IUserJoinedHandler>();
             service.AddSingletonOfType<IMessageEditedHandler>();
             service.AddSingletonOfType<IUserVoiceChannelChangedHandler>();
@@ -91,6 +91,18 @@ static class ServiceCollectionExtensions
         foreach (var type in types)
         {
             service.AddSingleton(typeof(T), type);
+        }
+    }
+    
+    public static void AddTransientOfType<T>(this ServiceCollection service)
+    {
+        var currentAssembly = Assembly.GetExecutingAssembly();
+
+        var types = currentAssembly.ExportedTypes.Where(x => x is { IsClass: true, IsPublic: true, IsAbstract: false } && x.GetInterfaces().Any(y=> y == typeof(T))).ToList();
+
+        foreach (var type in types)
+        {
+            service.AddTransient(typeof(T), type);
         }
     }
 }
