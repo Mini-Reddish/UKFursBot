@@ -37,7 +37,7 @@ public class RichTextBuilder
     {
         foreach (var item in items)
         {
-            _sb.AppendLine($"  • {textToDisplayPerItem(item)}");
+            _sb.AppendLine($"- {textToDisplayPerItem(item)}");
         }
         return this;
     }
