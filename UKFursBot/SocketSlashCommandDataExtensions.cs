@@ -10,7 +10,7 @@ public static  class SocketSlashCommandDataExtensions
         var result = Activator.CreateInstance(type);
         foreach (var parameter in data.Options)
         {
-            var propertyRef = type.GetProperty(parameter.Name,
+            var propertyRef = type.GetProperty(parameter.Name.WithoutUnderscores(),
                 BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
 
             if (propertyRef == null)

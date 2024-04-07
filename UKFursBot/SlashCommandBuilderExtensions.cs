@@ -22,7 +22,7 @@ public static class SlashCommandBuilderExtensions
         foreach (var propertyInfo in commandProperties)
         {
             var description = "No description here";
-            var name = propertyInfo.Name.ToLowerInvariant();
+            var name = propertyInfo.Name.ToLowerCaseWithUnderscores();
             var propertyDescriptionAttribute = propertyInfo.GetCustomAttribute(typeof(CommandParameterDescriptionAttribute)) as CommandParameterDescriptionAttribute;
             var isRequired = propertyInfo.GetCustomAttribute<CommandParameterRequiredAttribute>()?.IsRequired ?? false;
             if (propertyDescriptionAttribute != null)
