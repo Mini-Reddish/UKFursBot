@@ -1,4 +1,5 @@
 using Discord;
+using Discord.Net;
 using Discord.WebSocket;
 using UKFursBot.Context;
 
@@ -31,8 +32,14 @@ public class SocketMessageChannelManager
             Color = Color.Orange,
             
         };
-
-        await loggingChannel.SendMessageAsync(string.Empty, false, embedBuilder.Build());
+        try
+        {
+            await loggingChannel.SendMessageAsync(string.Empty, false, embedBuilder.Build());
+        }
+        catch (HttpException httpException)
+        {
+            //TODO:  Log missing access exception. error 50001
+        }
     }
     
     public async Task SendLoggingErrorMessageAsync(string message, Exception exception)
@@ -62,7 +69,7 @@ public class SocketMessageChannelManager
     {
         var configuration = _dbContext.BotConfigurations.First();
 
-        if (await _socketClient.GetChannelAsync(configuration.ModerationLoggingChannel) is not ITextChannel
+        if (configuration.ModerationLoggingChannel == 0 || await _socketClient.GetChannelAsync(configuration.ModerationLoggingChannel) is not ITextChannel
             loggingChannel)
         {
             await SendLoggingWarningMessageAsync("Moderation Logging channel is not set");

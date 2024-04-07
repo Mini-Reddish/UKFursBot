@@ -41,6 +41,9 @@ public class SetChannelForCommand : BaseCommand<SetChannelForCommandParameters>
             case AdminMessageTypes.ModerationLog:
                 botConfiguration.ModerationLoggingChannel = commandParameters.Channel.Id;
                 break;
+            case AdminMessageTypes.ModMail:
+                botConfiguration.ModMailChannel = commandParameters.Channel.Id;
+                break;
         }
 
         if (isCreating == false)

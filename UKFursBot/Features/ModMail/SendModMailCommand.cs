@@ -21,8 +21,7 @@ public class SendModMailCommand : BaseCommand<SendModMailCommandParameters>
     }
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, SendModMailCommandParameters commandParameters)
     {
-        var guildId = socketSlashCommand.GuildId.GetValueOrDefault();
-        var botConfig = _dbContext.BotConfigurations.First(x => x.GuildId == guildId);
+        var botConfig = _dbContext.BotConfigurations.First();
 
         if (botConfig.ModMailChannel == 0)
         {
