@@ -49,10 +49,11 @@ public class SetChannelForCommand : BaseCommand<SetChannelForCommandParameters>
         }
 
         await _dbContext.SaveChangesAsync();
-        await socketSlashCommand.RespondAsync("Request Complete!");
+        
         var messageContents = new RichTextBuilder()
             .AddHeading1("Config Changed")
-            .AddText($"I have set the {commandParameters.MessageType} messages to be sent to <#{commandParameters.Channel.Id}>");
+            .AddText($"I have set the {commandParameters.MessageType} messages to be sent to <#{commandParameters.Channel.Id}>")
+            .AddText($"Action by <@{socketSlashCommand.User.Id}>");
         
         var embed = new EmbedBuilder()
         {
