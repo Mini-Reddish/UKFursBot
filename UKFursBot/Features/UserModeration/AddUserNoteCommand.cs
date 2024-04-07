@@ -25,6 +25,12 @@ public class AddUserNoteCommand : BaseCommand<AddUserNoteCommandParameters>
         if (settings == null) 
             return;
         
+        if (settings.ErrorLoggingChannelId == 0)
+        {
+            await FollowupAsync("WARNING: The logging channel has not been assigned.  Please assign one using the /admin_set_channel_for MessageLog command");
+            return;
+        }
+        
         var userNote = new UserNote()
         {
             UserId = commandParameters.User.Id,
@@ -47,6 +53,7 @@ public class AddUserNoteCommand : BaseCommand<AddUserNoteCommandParameters>
             Color = Color.Orange,
             Description = response.Build()
         }.Build();
+        
         var channel = await _client.GetChannelAsync(settings.ErrorLoggingChannelId);
         if (channel is SocketTextChannel textChannel)
         {
