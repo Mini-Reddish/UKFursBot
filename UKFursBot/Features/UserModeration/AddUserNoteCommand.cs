@@ -25,9 +25,9 @@ public class AddUserNoteCommand : BaseCommand<AddUserNoteCommandParameters>
         if (settings == null) 
             return;
         
-        if (settings.ErrorLoggingChannelId == 0)
+        if (settings.ModerationLoggingChannel == 0)
         {
-            await FollowupAsync("WARNING: The logging channel has not been assigned.  Please assign one using the /admin_set_channel_for MessageLog command");
+            await FollowupAsync("WARNING: The logging channel has not been assigned.  Please assign one using the /admin_set_channel_for ModerationLog command");
             return;
         }
         
@@ -54,7 +54,7 @@ public class AddUserNoteCommand : BaseCommand<AddUserNoteCommandParameters>
             Description = response.Build()
         }.Build();
         
-        var channel = await _client.GetChannelAsync(settings.ErrorLoggingChannelId);
+        var channel = await _client.GetChannelAsync(settings.ModerationLoggingChannel);
         if (channel is SocketTextChannel textChannel)
         {
             await textChannel.SendMessageAsync(embed: embed);
