@@ -48,6 +48,10 @@ public static class SlashCommandBuilderExtensions
             {
                 builder.AddOption(name, ApplicationCommandOptionType.Role, description, isRequired);
             }
+            else if (propertyInfo.PropertyType == typeof(ulong))
+            {
+                builder.AddOption(name, ApplicationCommandOptionType.String, description, isRequired);
+            }
 
             if (propertyInfo.PropertyType.IsEnum)
             {

@@ -23,11 +23,19 @@ public static  class SocketSlashCommandDataExtensions
             {
                 propertyRef.SetValue(result, Enum.Parse(propertyRef.PropertyType, parameter.Value.ToString() ?? string.Empty));
             }
+            else if (propertyRef.PropertyType == typeof(ulong))
+            {
+                if (!ulong.TryParse(parameter.Value.ToString() ?? string.Empty, out var value))
+                {
+                    //TODO:  Log parsing error.
+                }
+                
+                propertyRef.SetValue(result,value);
+            }
             else
             {
                 propertyRef.SetValue(result, parameter.Value);
             }
-
         }
 
         if (result == null)
