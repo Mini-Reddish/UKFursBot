@@ -7,10 +7,10 @@ namespace UKFursBot;
 
 public static class SlashCommandBuilderExtensions
 {
-    public static Discord.SlashCommandBuilder BuildOptionsFromParameters(this Discord.SlashCommandBuilder builder, ISlashCommand command)
+    public static SlashCommandBuilder BuildOptionsFromParameters(this SlashCommandBuilder builder, ISlashCommand command)
     {
         var commandBaseType = command.GetType().BaseType;
-        if (commandBaseType == null)
+        if (commandBaseType == null || commandBaseType.Name != typeof(BaseCommand<>).Name)
             throw new Exception($"Cannot get base type.  All commands must inherit {typeof(BaseCommand<>).FullName}");
         
         var commandPropertiesType = commandBaseType.GetGenericArguments().FirstOrDefault();
@@ -52,8 +52,7 @@ public static class SlashCommandBuilderExtensions
             {
                 builder.AddOption(name, ApplicationCommandOptionType.String, description, isRequired);
             }
-
-            if (propertyInfo.PropertyType.IsEnum)
+            else if (propertyInfo.PropertyType.IsEnum)
             {
                 var choices = new List<ApplicationCommandOptionChoiceProperties>();
                 var type = propertyInfo.PropertyType;
@@ -64,9 +63,6 @@ public static class SlashCommandBuilderExtensions
                 }
                 builder.AddOption(name, ApplicationCommandOptionType.String, description, isRequired, choices: choices.ToArray());
             }
-
-          
-
         }
       
         return builder;
