@@ -11,8 +11,6 @@ public class InviteUserToPrivateChannelCommand : BaseCommand<InviteUserToPrivate
 {
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, InviteUserToPrivateChannelCommandParameters commandParameters)
     {
-        await socketSlashCommand.DeferAsync();
-        
         if(socketSlashCommand.User is not SocketGuildUser userOfCommand)
             return;
 
