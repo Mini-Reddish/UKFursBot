@@ -1,3 +1,4 @@
+using Discord;
 using Discord.WebSocket;
 
 namespace UKFursBot;
@@ -24,6 +25,17 @@ public abstract class BaseCommand<T> : ISlashCommand
 
         return Task.CompletedTask;
     } 
+    protected Task FollowupAsync(Embed response)
+    {
+        if (_hasFollowedUp == false && _socketSlashCommand != null)
+        {
+            _hasFollowedUp = true;
+            return _socketSlashCommand.FollowupAsync(embed: response, ephemeral: true);
+        }
+
+        return Task.CompletedTask;
+    } 
+    
 
     protected abstract Task Implementation(SocketSlashCommand socketSlashCommand, T commandParameters);
 }

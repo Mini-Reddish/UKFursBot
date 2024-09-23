@@ -1,6 +1,6 @@
 using Discord;
 using Discord.WebSocket;
-using UKFursBot.Commands.CommandClassAttributes;
+using UKFursBot.Commands;
 using UKFursBot.Context;
 using UKFursBot.Entities;
 
@@ -24,8 +24,8 @@ public class AddBanExemptionCommand : BaseCommand<AddBanExemptionCommandParamete
             return;
         }
 
-        var id = commandParameters?.Role?.Id ?? commandParameters?.User?.Id ?? 0;
-        var type = commandParameters?.Role != null ? PermissionTarget.Role : PermissionTarget.User;
+        var id = commandParameters.Role?.Id ?? commandParameters.User?.Id ?? 0;
+        var type = commandParameters.Role != null ? PermissionTarget.Role : PermissionTarget.User;
 
         if (_dbContext.BanExemptions.FirstOrDefault(x => x.Id == id) != null)
         {

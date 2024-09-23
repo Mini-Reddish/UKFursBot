@@ -1,6 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using UKFursBot.Commands.CommandClassAttributes;
+using UKFursBot.Commands;
 using UKFursBot.Context;
 using UKFursBot.Entities;
 
@@ -86,11 +86,11 @@ public class BanCommand : BaseCommand<BanCommandParameters>
 public class BanCommandParameters   
 {
     [CommandParameterRequired]
-    public SocketGuildUser User { get; set; }
+    public required SocketGuildUser User { get; set; }
     
     
     [CommandParameterRequired]
-    public string BanMessage { get; set; }
+    public required string BanMessage { get; set; }
     
     [CommandParameterRequired]
     public bool PurgeRecentMessages { get; set; }

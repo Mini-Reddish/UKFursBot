@@ -1,10 +1,10 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using UKFursBot.Commands.CommandClassAttributes;
+using UKFursBot.Commands;
 using UKFursBot.Context;
 using UKFursBot.Entities;
 
-namespace UKFursBot.Features.UserModeration;
+namespace UKFursBot.Features.UserNotes;
 
 [CommandName("add_user_note")]
 [CommandDescription("Add a note to the specified user")]
@@ -66,8 +66,8 @@ public class AddUserNoteCommand : BaseCommand<AddUserNoteCommandParameters>
 public class AddUserNoteCommandParameters
 {
     [CommandParameterRequired]
-    public SocketGuildUser User { get; set; }
+    public required SocketGuildUser User { get; set; }
     
     [CommandParameterRequired]
-    public string Note { get; set; }
+    public required string Note { get; set; }
 }

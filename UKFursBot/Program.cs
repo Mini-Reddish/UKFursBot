@@ -4,7 +4,7 @@ using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using UKFursBot.Commands.CommandClassAttributes;
+using UKFursBot.Commands;
 using UKFursBot.Context;
 using UKFursBot.Entities;
 
@@ -13,7 +13,7 @@ namespace UKFursBot;
 class Program
 {
     private static IServiceProvider _services = null!;
-    private BotGuildUsers botGuildUsers;
+    private BotGuildUsers _botGuildUsers = null!;
 
     public static int Main(string[] args)
     {
@@ -35,7 +35,7 @@ class Program
     {
         var config = _services.GetRequiredService<IConfiguration>();
         var client = _services.GetRequiredService<DiscordSocketClient>();
-        botGuildUsers = _services.GetRequiredService<BotGuildUsers>();
+        _botGuildUsers = _services.GetRequiredService<BotGuildUsers>();
 
         client.Log += LogAsync;
         try
@@ -123,7 +123,6 @@ class Program
         
         if (command?.GetType().BaseType == null)
         {
-            //Log error that command implementation does not exist.  Should never happen by design.
             return;
         }
         var commandParameters = arg.Data.MapDataToType(command.GetType().BaseType!.GetGenericArguments().First());
@@ -141,7 +140,7 @@ class Program
     {
         await InitialiseGuildBotConfigurationInDb(guild);
 
-        botGuildUsers.TryAdd(guild.Id, guild.CurrentUser);
+        _botGuildUsers.TryAdd(guild.Id, guild.CurrentUser);
         var commands = _services.GetServices<ISlashCommand>();
         var guildCommands = new List<ApplicationCommandProperties>();
         foreach (var slashCommand in commands)
@@ -153,7 +152,7 @@ class Program
 
                 if (commandNameAttribute == null || commandDescriptionAttribute == null)
                 {
-                    //TODO: Log missing command attributes.
+                    Console.WriteLine($"Unable to create the command for {slashCommand.GetType().Name} due to missing Name and/or description attributes.");
                     continue;
                 }
                 var guildCommand = new SlashCommandBuilder()

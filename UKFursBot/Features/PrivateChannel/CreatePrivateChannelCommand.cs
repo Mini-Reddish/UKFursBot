@@ -1,12 +1,12 @@
 using Discord;
 using Discord.WebSocket;
-using UKFursBot.Commands.CommandClassAttributes;
+using UKFursBot.Commands;
 
 namespace UKFursBot.Features.PrivateChannel;
 
 [CommandName("Create_private_channel")]
 [CommandDescription("Creates a private voice channel.")]
-public class CreatePrivateChannelCommand : BaseCommand<CreateVoiceChannelCommandParameters>
+public class CreatePrivateChannelCommand : BaseCommand<NoCommandParameters>
 {
     private readonly BotGuildUsers _botGuildUsers;
 
@@ -26,7 +26,7 @@ public class CreatePrivateChannelCommand : BaseCommand<CreateVoiceChannelCommand
         return PrivateChannelConstants.PrivateChannelPrefix +(maxPrivateChannelNumber + 1);
     }
 
-    protected override async Task Implementation(SocketSlashCommand socketSlashCommand, CreateVoiceChannelCommandParameters commandParameters)
+    protected override async Task Implementation(SocketSlashCommand socketSlashCommand, NoCommandParameters commandParameters)
     {
         if (socketSlashCommand.User is not SocketGuildUser user)
             return;
@@ -66,8 +66,4 @@ public class CreatePrivateChannelCommand : BaseCommand<CreateVoiceChannelCommand
             await FollowupAsync($"I have failed to create the private channel sorry.");
         }
     }
-}
-
-public class CreateVoiceChannelCommandParameters
-{
 }

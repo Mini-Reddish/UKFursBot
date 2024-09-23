@@ -15,7 +15,7 @@ public static  class SocketSlashCommandDataExtensions
 
             if (propertyRef == null)
             {
-                //TODO: log error.
+                Console.WriteLine($"Could not get property ref for {parameter.Name}");
                 continue;
             }
             
@@ -27,7 +27,7 @@ public static  class SocketSlashCommandDataExtensions
             {
                 if (!ulong.TryParse(parameter.Value.ToString() ?? string.Empty, out var value))
                 {
-                    //TODO:  Log parsing error.
+                    Console.WriteLine($"Could not parse value {parameter.Value} as type ulong");
                 }
                 
                 propertyRef.SetValue(result,value);

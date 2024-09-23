@@ -1,4 +1,4 @@
-﻿namespace UKFursBot.Commands.CommandClassAttributes;
+﻿namespace UKFursBot.Commands;
 
 [AttributeUsage(AttributeTargets.Class)]
 public class CommandNameAttribute : Attribute

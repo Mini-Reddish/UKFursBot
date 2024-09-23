@@ -1,4 +1,4 @@
-namespace UKFursBot.Commands.CommandClassAttributes;
+namespace UKFursBot.Commands;
 
 public class CommandParameterRequiredAttribute : Attribute
 {

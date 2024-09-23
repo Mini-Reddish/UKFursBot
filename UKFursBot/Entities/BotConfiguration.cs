@@ -11,7 +11,9 @@ public class BotConfiguration
     
     public virtual ulong UserJoinLoggingChannelId { get; set; }
     public virtual long MinutesThresholdForMessagesBeforeEditsAreSuspicious { get; set; }
-    public ulong ModerationLoggingChannel { get; set; }
-    public ulong GuildId { get; set; }
-    public ulong ModMailChannel { get; set; }
+    public virtual ulong ModerationLoggingChannel { get; set; }
+    public virtual ulong GuildId { get; set; }
+    public virtual ulong ModMailChannel { get; set; }
+    public virtual bool UserJoinLoggingEnabled { get; set; }
+    public virtual string ModMailResponseMessage { get; set; } = String.Empty;
 }

@@ -1,7 +1,7 @@
 using Discord;
 using Discord.Net;
 using Discord.WebSocket;
-using UKFursBot.Commands.CommandClassAttributes;
+using UKFursBot.Commands;
 
 namespace UKFursBot.Features.PrivateChannel;
 
@@ -9,6 +9,12 @@ namespace UKFursBot.Features.PrivateChannel;
 [CommandDescription("Invite a user to your current private channel.")]
 public class InviteUserToPrivateChannelCommand : BaseCommand<InviteUserToPrivateChannelCommandParameters>
 {
+    private readonly SocketMessageChannelManager _messageChannelManager;
+
+    public InviteUserToPrivateChannelCommand( SocketMessageChannelManager messageChannelManager)
+    {
+        _messageChannelManager = messageChannelManager;
+    }
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, InviteUserToPrivateChannelCommandParameters commandParameters)
     {
         if(socketSlashCommand.User is not SocketGuildUser userOfCommand)
@@ -34,8 +40,12 @@ public class InviteUserToPrivateChannelCommand : BaseCommand<InviteUserToPrivate
 
         var privateChannel = userOfCommand.Guild.Channels.First(x => x.Name == usersPrivateRole.Name);
         if (privateChannel == null)
-            //TODO: Log that the private channel could not be found.
+        {
+            await _messageChannelManager.SendLoggingWarningMessageAsync("A user tried to invite someone to a private channel however the channel does not exist.  This suggests that the private channel system is set up invalid.");
+            await FollowupAsync($"Cannot invite the user <@{commandParameters.User.Id}> as the channel does not exist.");
             return;
+        }
+          
         var richTextMessage = new RichTextBuilder()
             .AddHeading2("Invitation to Private Chat")
             .AddText($"<@{userOfCommand.Id}> has invited you to join their private call <#{privateChannel.Id}>")
@@ -51,7 +61,8 @@ public class InviteUserToPrivateChannelCommand : BaseCommand<InviteUserToPrivate
         }
         catch (HttpException httpException)
         {
-            //TODO:  Check and prompt that a DM could not be sent to invite them so the user needs to do it manually.
+            await _messageChannelManager.SendLoggingErrorMessageAsync("Inviting user to private channel failed due to an exception.", httpException);
+            await FollowupAsync($"The user <@{commandParameters.User.Id}> could not be contacted to invite them.  Please message them manually");
         }
         
         await FollowupAsync($"The user <@{commandParameters.User.Id}> has invited to the private chat!");
@@ -62,5 +73,5 @@ public class InviteUserToPrivateChannelCommand : BaseCommand<InviteUserToPrivate
 public class InviteUserToPrivateChannelCommandParameters    
 {
     [CommandParameterRequired]
-    public SocketGuildUser User { get; set; }
+    public required SocketGuildUser User { get; set; }
 }

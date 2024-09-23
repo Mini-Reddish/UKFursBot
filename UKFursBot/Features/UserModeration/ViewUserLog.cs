@@ -1,6 +1,6 @@
 using Discord;
 using Discord.WebSocket;
-using UKFursBot.Commands.CommandClassAttributes;
+using UKFursBot.Commands;
 using UKFursBot.Context;
 using UKFursBot.Entities;
 
@@ -52,7 +52,7 @@ public class ViewUserLogCommand : BaseCommand<ViewUserLogCommandParameters>
         if (userNotes.Count > 0)
         {
             content.AddHeading3("User Notes")
-                .AddBulletedListItems<IEnumerable<UserNote>, UserNote>(userNotes, note => note.Reason);
+                .AddBulletedListItems<IEnumerable<UserNote>, UserNote>(userNotes, note => $"ID:{note.Id} - {note.Reason}");
         }
 
         if (bans.Count == 0 && warnings.Count == 0 && userNotes.Count == 0)
@@ -67,7 +67,14 @@ public class ViewUserLogCommand : BaseCommand<ViewUserLogCommandParameters>
         }.Build();
 
         var moderationMessageChannel = await _socketClient.GetTextChannelAsync(guildSettings.ModerationLoggingChannel);
-        await moderationMessageChannel.SendMessageAsync($"<@{socketSlashCommand.User.Id}>", embed: embed);
+        if (moderationMessageChannel != null)
+        {
+            await moderationMessageChannel.SendMessageAsync($"<@{socketSlashCommand.User.Id}>", embed: embed);
+        }
+        else
+        {
+            
+        }
     }
 }
 

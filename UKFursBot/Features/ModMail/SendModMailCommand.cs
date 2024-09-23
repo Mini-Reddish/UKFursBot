@@ -1,6 +1,6 @@
 using Discord;
 using Discord.WebSocket;
-using UKFursBot.Commands.CommandClassAttributes;
+using UKFursBot.Commands;
 using UKFursBot.Context;
 
 namespace UKFursBot.Features.ModMail;
@@ -41,12 +41,19 @@ public class SendModMailCommand : BaseCommand<SendModMailCommandParameters>
             Color = Color.Green,
             Description = content,
         }.Build();
-        await modMailChannel.SendMessageAsync(embed: embed);
+        if (modMailChannel != null)
+        {
+            await modMailChannel.SendMessageAsync(embed: embed);
+        }
+        else
+        {
+            await _messageChannelManager.SendLoggingWarningMessageAsync("Modmail channel is not valid.  A user attempted to communicate using the modmail command.");
+        }
     }
 }
 
 public class SendModMailCommandParameters       
 {
     [CommandParameterRequired]
-    public string Message { get; set; }
+    public required string Message { get; set; }
 }

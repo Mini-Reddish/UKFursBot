@@ -3,9 +3,7 @@ using Discord;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using UKFursBot.Commands;
 using UKFursBot.Context;
-using UKFursBot.Features.UserModeration;
 
 namespace UKFursBot;
 
@@ -24,6 +22,7 @@ public static class ServiceProvider
             service.AddConfiguration();
             service.AddDbContext<UKFursBotDbContext>();
             service.AddDiscordClient();
+            service.AddTransientOfType<IDiagnosticsCheck>();
             service.AddTransientOfType<ISlashCommand>();
             service.AddSingletonOfType<IUserJoinedHandler>();
             service.AddSingletonOfType<IMessageEditedHandler>();
@@ -31,6 +30,7 @@ public static class ServiceProvider
             service.AddSingletonOfType<IUserMessageReceivedHandler>();
             service.AddSingleton<SocketMessageChannelManager>();
             service.AddSingleton<BotGuildUsers>();
+            
             
             _instance = service.BuildServiceProvider();
         }

@@ -1,7 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using UKFursBot.Commands;
-using UKFursBot.Commands.CommandClassAttributes;
 using UKFursBot.Context;
 using UKFursBot.Entities;
 
@@ -68,7 +67,7 @@ public class WarnCommand : BaseCommand<WarnCommandParameters>
 public class WarnCommandParameters      
 {
     [CommandParameterRequired]
-    public SocketGuildUser User { get; set; }
+    public required SocketGuildUser User { get; set; }
     [CommandParameterRequired]
-    public string Message { get; set; }
+    public required string Message { get; set; }
 }

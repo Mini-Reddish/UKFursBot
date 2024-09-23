@@ -1,10 +1,10 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using UKFursBot.Commands.CommandClassAttributes;
+using UKFursBot.Commands;
 using UKFursBot.Context;
 using UKFursBot.Entities;
 
-namespace UKFursBot.Commands.Admin.SetAnnouncementMessageChannelCommand;
+namespace UKFursBot.Features.Configuration;
 
 [CommandName("admin_set_channel_for")]
 [CommandDescription("Set the channel setting to output in the specified channel")]
@@ -18,6 +18,12 @@ public class SetChannelForCommand : BaseCommand<SetChannelForCommandParameters>
     }
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, SetChannelForCommandParameters commandParameters)
     {
+        if (commandParameters.Channel is not ITextChannel)
+        {
+            await FollowupAsync("The specified channel is invalid.  You must specify a text channel.");
+            return;
+        }
+        
         var botConfiguration = _dbContext.BotConfigurations.FirstOrDefault();
         bool isCreating = false;
         if (botConfiguration == null)
@@ -73,6 +79,6 @@ public class SetChannelForCommandParameters
     public AdminMessageTypes MessageType { get; set; }
     
     [CommandParameterRequired]
-    public SocketTextChannel Channel { get; set; }
+    public required IGuildChannel Channel { get; set; }
     
 }

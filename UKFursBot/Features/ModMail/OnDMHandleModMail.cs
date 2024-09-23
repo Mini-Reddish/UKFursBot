@@ -25,7 +25,6 @@ public class OnDmHandleModMail : IUserMessageReceivedHandler
         if (socketUserMessage.Channel is not SocketDMChannel dmChannel)
             return;
 
-
         var botConfig = _dbContext.BotConfigurations.First();
 
         if (botConfig.ModMailChannel == 0)
@@ -33,9 +32,7 @@ public class OnDmHandleModMail : IUserMessageReceivedHandler
             await _messageChannelManager.SendLoggingWarningMessageAsync("Modmail channel has not been set.");
             return;
         }
-
-        var modMailChannel = await _socketClient.GetTextChannelAsync(botConfig.ModMailChannel);
-
+        
         var content = new RichTextBuilder()
             .AddHeading2($"Message from {socketUserMessage.Author.Username} | <@{socketUserMessage.Id}>")
             .AddText(socketUserMessage.Content)
@@ -46,9 +43,16 @@ public class OnDmHandleModMail : IUserMessageReceivedHandler
             Color = Color.Green,
             Description = content,
         }.Build();
-        await modMailChannel.SendMessageAsync(embed: embed);
-        await dmChannel.SendMessageAsync("Modmail sent, a moderator will be with you shortly to assist");
-
-
+        
+        var modMailChannel = await _socketClient.GetTextChannelAsync(botConfig.ModMailChannel);
+        if (modMailChannel != null)
+        {
+            await modMailChannel.SendMessageAsync(embed: embed);
+        }
+        else
+        {
+            await _messageChannelManager.SendLoggingWarningMessageAsync("Modmail channel specified was not a valid text channel.");
+        }
+        await dmChannel.SendMessageAsync(botConfig.ModMailResponseMessage);
     }
 }

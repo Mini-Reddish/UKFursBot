@@ -6,17 +6,17 @@ namespace UKFursBot.Context;
 
 public partial class UKFursBotDbContext : DbContext
 {
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration _configuration = null!;
 
-    public virtual DbSet<AnnouncementMessage> AnnouncementMessages { get; set; }
-    public virtual DbSet<BotConfiguration> BotConfigurations { get; set; }
-    public virtual DbSet<Warning> Warnings { get; set; }
-    public virtual DbSet<UserNote> UserNotes { get; set; }
-    public virtual DbSet<BanOnJoin> BansOnJoin { get; set; }
-    public virtual DbSet<ModMail> ModMails { get; set; }
-    public virtual DbSet<ErrorLogging> ErrorLogging { get; set; }
-    public virtual DbSet<ModBanExemption> BanExemptions { get; set; }
-    public DbSet<BanLog> BanLogs { get; set; }
+    public virtual DbSet<AnnouncementMessage> AnnouncementMessages { get; set; } = null!;
+    public virtual DbSet<BotConfiguration> BotConfigurations { get; set; } = null!;
+    public virtual DbSet<Warning> Warnings { get; set; } = null!;
+    public virtual DbSet<UserNote> UserNotes { get; set; } = null!;
+    public virtual DbSet<BanOnJoin> BansOnJoin { get; set; } = null!;
+    public virtual DbSet<ModMail> ModMails { get; set; } = null!;
+    public virtual DbSet<ErrorLogging> ErrorLogging { get; set; } = null!;
+    public virtual DbSet<ModBanExemption> BanExemptions { get; set; } = null!;
+    public DbSet<BanLog> BanLogs { get; set; } = null!;
 
     public UKFursBotDbContext()
     {

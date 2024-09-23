@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using Discord;
 using Discord.WebSocket;
-using UKFursBot.Commands.CommandClassAttributes;
+using UKFursBot.Commands;
 
 namespace UKFursBot;
 
@@ -32,9 +32,9 @@ public static class SlashCommandBuilderExtensions
             {
                 builder.AddOption(name, ApplicationCommandOptionType.String, description, isRequired: isRequired);
             }
-            else if (propertyInfo.PropertyType == typeof(SocketTextChannel))
+            else if (propertyInfo.PropertyType == typeof(IGuildChannel))
             {
-                  builder.AddOption(name, ApplicationCommandOptionType.Channel, description,  isRequired: isRequired);
+                  builder.AddOption(name, ApplicationCommandOptionType.Channel, description, isRequired: isRequired);
             }
             else if (propertyInfo.PropertyType == typeof(SocketGuildUser))
             {

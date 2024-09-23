@@ -38,7 +38,7 @@ public class SocketMessageChannelManager
         }
         catch (HttpException httpException)
         {
-            //TODO:  Log missing access exception. error 50001
+            Console.WriteLine($"Unable to send message to the logging channel. {httpException.Message}");
         }
     }
     
