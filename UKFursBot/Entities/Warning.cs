@@ -3,7 +3,7 @@ namespace UKFursBot.Entities;
 public class Warning
 {
     [Key] 
-    public virtual long Id { get; set; }
+    public virtual ulong Id { get; set; }
     public virtual DateTime DateAdded { get; set; }
     public virtual bool Forgiven { get; set; }
     public virtual ulong ForgivenBy { get; set; }

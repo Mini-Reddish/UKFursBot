@@ -2,7 +2,7 @@ using Discord;
 using Discord.WebSocket;
 using UKFursBot.Context;
 
-namespace UKFursBot.Features.Configuration;
+namespace UKFursBot.Features.UserGreeting;
 
 public class UserJoinLoggingChannelConfiguredDiagnosticsCheck : IDiagnosticsCheck
 {

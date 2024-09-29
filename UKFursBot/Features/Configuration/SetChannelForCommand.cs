@@ -56,8 +56,6 @@ public class SetChannelForCommand : BaseCommand<SetChannelForCommandParameters>
         {
             _dbContext.BotConfigurations.Update(botConfiguration);
         }
-
-        await _dbContext.SaveChangesAsync();
         
         var messageContents = new RichTextBuilder()
             .AddHeading1("Config Changed")

@@ -1,4 +1,4 @@
-namespace UKFursBot;
+namespace UKFursBot.Commands;
 
 public class NoCommandParameters
 {

@@ -40,7 +40,6 @@ public class AddUserNoteCommand : BaseCommand<AddUserNoteCommandParameters>
         };
         
         _dbContext.UserNotes.Add(userNote);
-        await _dbContext.SaveChangesAsync();
 
         var response = new RichTextBuilder()
             .AddHeading2("User Note Added")

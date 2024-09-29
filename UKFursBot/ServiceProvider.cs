@@ -3,6 +3,7 @@ using Discord;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using UKFursBot.Commands;
 using UKFursBot.Context;
 
 namespace UKFursBot;

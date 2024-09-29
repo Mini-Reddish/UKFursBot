@@ -62,33 +62,41 @@ class Program
 
     private async Task ClientOnMessageReceived(SocketMessage message)
     {
+        var dbContext = _services.GetRequiredService<UKFursBotDbContext>();
         var userMessageReceivedHandlers = _services.GetServices<IUserMessageReceivedHandler>();
 
-        if(message is SocketUserMessage socketUserMessage)
-            foreach (var userMessageReceivedHandler in userMessageReceivedHandlers)
-            {
-                await userMessageReceivedHandler.HandleMessageReceived(socketUserMessage);
-            }
+        if (message is not SocketUserMessage socketUserMessage)
+            return;
+        foreach (var userMessageReceivedHandler in userMessageReceivedHandlers)
+        {
+            await userMessageReceivedHandler.HandleMessageReceived(socketUserMessage);
+        }
+
+        await dbContext.SaveChangesAsync();
     }
 
     private async Task ClientOnUserVoiceChannelChanged(SocketUser user, SocketVoiceState previousVoiceState, SocketVoiceState currentVoiceState)
     {
+        var dbContext = _services.GetRequiredService<UKFursBotDbContext>();
         var userVoiceChannelChangedHandlers = _services.GetServices<IUserVoiceChannelChangedHandler>();
 
         foreach (var userVoiceChannelChangedHandler in userVoiceChannelChangedHandlers)
         {
             await userVoiceChannelChangedHandler.HandleUserVoiceChannelChanged(user, previousVoiceState, currentVoiceState);
         }
+        await dbContext.SaveChangesAsync();
     }
 
     private async Task ClientOnMessageUpdated(Cacheable<IMessage, ulong> before, SocketMessage after, ISocketMessageChannel channel)
     {
+        var dbContext = _services.GetRequiredService<UKFursBotDbContext>();
         var messageUpdatedHandlers = _services.GetServices<IMessageEditedHandler>();
 
         foreach (var messageUpdatedHandler in messageUpdatedHandlers)
         {
             await messageUpdatedHandler.HandleMessageUpdated(before, after, channel);
         }
+        await dbContext.SaveChangesAsync();
     }
 
     private Task LogAsync(LogMessage arg)
@@ -99,12 +107,14 @@ class Program
 
     private async Task ClientOnUserJoined(SocketGuildUser arg)
     {
+        var dbContext = _services.GetRequiredService<UKFursBotDbContext>();
         var onUserJoinedHandlers = _services.GetServices<IUserJoinedHandler>();
         
         foreach (var userJoinedHandler in onUserJoinedHandlers)
         {
             await userJoinedHandler.HandleUserJoined(arg);
         }
+        await dbContext.SaveChangesAsync();
     }
 
     private async Task ClientOnModalSubmitted(SocketModal arg)
@@ -115,6 +125,7 @@ class Program
 
     private async Task ClientOnSlashCommandExecuted(SocketSlashCommand arg)
     {
+        var dbContext = _services.GetRequiredService<UKFursBotDbContext>();
         var command = _services.GetServices<ISlashCommand>().FirstOrDefault(x =>
         {
             var commandNameAttribute = x.GetType().GetCustomAttribute<CommandNameAttribute>();
@@ -133,7 +144,7 @@ class Program
             await (Task) methodInfo.Invoke(command, new[] { arg, commandParameters })!;
         }
 
-
+        await dbContext.SaveChangesAsync();
     }
 
     private async Task ClientOnGuildAvailable(SocketGuild guild)

@@ -1,4 +1,4 @@
-namespace UKFursBot;
+namespace UKFursBot.Features.Configuration;
 
 public enum AdminMessageTypes
 {

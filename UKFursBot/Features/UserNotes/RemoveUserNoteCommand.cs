@@ -27,10 +27,8 @@ public class RemoveUserNoteCommand  : BaseCommand<RemoveUserNoteCommandParameter
 
         var userId = commandParameters.User?.Id ?? commandParameters.UserId;
         
-        var settings = _dbContext.BotConfigurations.FirstOrDefault();
-        if (settings == null) 
-            return;
-        
+        var settings = _dbContext.BotConfigurations.First();
+
         if (settings.ModerationLoggingChannel == 0)
         {
             await FollowupAsync("WARNING: The logging channel has not been assigned.  Please assign one using the /admin_set_channel_for ModerationLog command");
@@ -75,5 +73,5 @@ public class RemoveUserNoteCommandParameters
     public ulong UserId { get; set; }
     
     [CommandParameterRequired]
-    public int NoteId { get; set; }
+    public ulong NoteId { get; set; }
 }

@@ -46,7 +46,6 @@ public class BanCommand : BaseCommand<BanCommandParameters>
                 ModeratorId = socketSlashCommand.User.Id,
                 Reason = commandParameters.BanMessage
             });
-            await _dbContext.SaveChangesAsync();
             return;
         }
 
@@ -58,7 +57,6 @@ public class BanCommand : BaseCommand<BanCommandParameters>
             Reason = commandParameters.BanMessage,
             WasSentToUser = sentToUser
         });
-        await _dbContext.SaveChangesAsync();
         
         var content = new RichTextBuilder()
             .AddHeading2("Banned User")

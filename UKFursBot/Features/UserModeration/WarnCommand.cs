@@ -40,7 +40,6 @@ public class WarnCommand : BaseCommand<WarnCommandParameters>
             ModeratorId = socketSlashCommand.User.Id,
             WasSentToUser = sentToUser
         });
-        await _dbContext.SaveChangesAsync();
         
         var content = new RichTextBuilder()
             .AddHeading2("Warned User")

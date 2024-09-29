@@ -4,7 +4,7 @@ using UKFursBot.Commands;
 
 namespace UKFursBot.Features.Diagnostics;
 
-[CommandName("perform_diagnostics")]
+[CommandName("diagnostics")]
 [CommandDescription("Run diagnostics checks to see if anything is set up incorrectly.")]
 public class SetupStatusChecklistCommand : BaseCommand<NoCommandParameters>
 {

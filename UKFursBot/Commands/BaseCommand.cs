@@ -1,7 +1,7 @@
 using Discord;
 using Discord.WebSocket;
 
-namespace UKFursBot;
+namespace UKFursBot.Commands;
 
 public abstract class BaseCommand<T> : ISlashCommand
 {

@@ -46,13 +46,13 @@ public class ViewUserLogCommand : BaseCommand<ViewUserLogCommandParameters>
         if (warnings.Count > 0)
         {
             content.AddHeading3("Warnings")
-                .AddBulletedListItems<IEnumerable<Warning>, Warning>(warnings, warning => warning.Reason);
+                .AddBulletedListItems<IEnumerable<Warning>, Warning>(warnings, FormattedWarning);
         }
 
         if (userNotes.Count > 0)
         {
             content.AddHeading3("User Notes")
-                .AddBulletedListItems<IEnumerable<UserNote>, UserNote>(userNotes, note => $"ID:{note.Id} - {note.Reason}");
+                .AddBulletedListItems<IEnumerable<UserNote>, UserNote>(userNotes, FormattedUserNote);
         }
 
         if (bans.Count == 0 && warnings.Count == 0 && userNotes.Count == 0)
@@ -71,10 +71,16 @@ public class ViewUserLogCommand : BaseCommand<ViewUserLogCommandParameters>
         {
             await moderationMessageChannel.SendMessageAsync($"<@{socketSlashCommand.User.Id}>", embed: embed);
         }
-        else
-        {
-            
-        }
+    }
+
+    private string FormattedWarning(Warning warning)
+    {
+        return $"ID:{warning.Id} - {warning.Reason} - By:<@{warning.ModeratorId}> ({warning.DateAdded.ToShortDateString()})";
+    }
+    
+    private string FormattedUserNote(UserNote userNote)
+    {
+        return $"ID:{userNote.Id} - {userNote.Reason} - By:<@{userNote.ModeratorId}> ({userNote.DateAdded.ToShortDateString()})";
     }
 }
 

@@ -21,6 +21,8 @@ public class RemoveOldSuspiciousEdits : IMessageEditedHandler
     public async Task HandleMessageUpdated(Cacheable<IMessage, ulong> before, SocketMessage after, ISocketMessageChannel channel)
     {
         var botConfig = _dbContext.BotConfigurations.First();
+        if (botConfig.MinutesThresholdForMessagesBeforeEditsAreSuspicious <= 0)
+            return;
         if (_urlRegex.IsMatch(after.Content) == false)
             return;
         var originalMessage = await before.GetOrDownloadAsync();
