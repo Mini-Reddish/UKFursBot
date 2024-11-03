@@ -27,7 +27,7 @@ public class ModMailChannelConfiguredDiagnosticsCheck : IDiagnosticsCheck
             };
         }
         
-        var modMailChannel = _client.GetChannel(settings.AnnouncementChannelId);
+        var modMailChannel = _client.GetChannel(settings.ModMailChannel);
 
         if (modMailChannel == null  || modMailChannel is not ITextChannel)
         {

@@ -50,6 +50,7 @@ class Program
             throw;
         }
 
+        client.Disconnected += ClientOnDisconnected;
         client.GuildAvailable += ClientOnGuildAvailable;
         client.SlashCommandExecuted += ClientOnSlashCommandExecuted;
         client.ModalSubmitted += ClientOnModalSubmitted;
@@ -59,6 +60,13 @@ class Program
         client.MessageReceived += ClientOnMessageReceived;
         
         await Task.Delay(-1);
+    }
+
+    private Task ClientOnDisconnected(Exception arg)
+    {
+        Console.WriteLine(arg.Message);
+        Console.WriteLine(arg.InnerException?.Message);
+        return Task.CompletedTask;
     }
 
     private async Task ClientOnMessageReceived(SocketMessage message)
