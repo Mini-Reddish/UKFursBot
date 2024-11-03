@@ -6,7 +6,7 @@ using UKFursBot.Entities;
 
 namespace UKFursBot.Features.UserModeration;
 
-[CommandName("Get_user_Log")]
+[CommandName("get_user_log")]
 [CommandDescription("Retrieves all Bans, warns, and user notes")]
 public class ViewUserLogCommand : BaseCommand<ViewUserLogCommandParameters>
 {

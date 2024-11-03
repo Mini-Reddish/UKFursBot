@@ -6,7 +6,7 @@ using UKFursBot.Entities;
 
 namespace UKFursBot.Features.UserNotes;
 
-[CommandName("add_user_note")]
+[CommandName("add_note")]
 [CommandDescription("Add a note to the specified user")]
 public class AddUserNoteCommand : BaseCommand<AddUserNoteCommandParameters>
 {
