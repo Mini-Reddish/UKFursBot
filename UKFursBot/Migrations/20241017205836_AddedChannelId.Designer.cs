@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UKFursBot.Context;
@@ -11,9 +12,11 @@ using UKFursBot.Context;
 namespace UKFursBot.Migrations
 {
     [DbContext(typeof(UKFursBotDbContext))]
-    partial class UKFursBotContextModelSnapshot : ModelSnapshot
+    [Migration("20241017205836_AddedChannelId")]
+    partial class AddedChannelId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -112,9 +115,6 @@ namespace UKFursBot.Migrations
                     b.Property<decimal>("GuildId")
                         .HasColumnType("numeric(20,0)");
 
-                    b.Property<long>("MinutesThresholdBetweenBoops")
-                        .HasColumnType("bigint");
-
                     b.Property<long>("MinutesThresholdForMessagesBeforeEditsAreSuspicious")
                         .HasColumnType("bigint");
 
@@ -156,17 +156,11 @@ namespace UKFursBot.Migrations
                     b.Property<decimal>("CreatePostResponseToken")
                         .HasColumnType("numeric(20,0)");
 
-                    b.Property<long>("EmbedColour")
-                        .HasColumnType("bigint");
-
                     b.Property<decimal>("MessageId")
                         .HasColumnType("numeric(20,0)");
 
                     b.Property<int>("State")
                         .HasColumnType("integer");
-
-                    b.Property<bool>("UseEmbed")
-                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 

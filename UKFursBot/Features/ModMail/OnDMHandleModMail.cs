@@ -32,6 +32,11 @@ public class OnDmHandleModMail : IUserMessageReceivedHandler
             await _messageChannelManager.SendLoggingWarningMessageAsync("Modmail channel has not been set.");
             return;
         }
+
+        if (string.IsNullOrWhiteSpace(botConfig.ModMailResponseMessage))
+        {
+            return;
+        }
         
         var content = new RichTextBuilder()
             .AddHeading2($"Message from {socketUserMessage.Author.Username} | <@{socketUserMessage.Id}>")

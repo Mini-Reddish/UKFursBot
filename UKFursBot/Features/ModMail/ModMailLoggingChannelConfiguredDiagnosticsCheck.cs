@@ -43,7 +43,7 @@ public class ModMailChannelConfiguredDiagnosticsCheck : IDiagnosticsCheck
             return new DiagnosticsResult()
             {
                 Status = DiagnosticsStatus.Warning,
-                ReasonForFailure = "ModMail does not have a response defined"
+                ReasonForFailure = "ModMail does not have a response defined so no message will be sent to the user."
             };
         }
 

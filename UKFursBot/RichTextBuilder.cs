@@ -41,4 +41,11 @@ public class RichTextBuilder
         }
         return this;
     }
+
+    public void AddCodeBlock(string text)
+    {
+        _sb.AppendLine("```");
+        _sb.AppendLine(text);
+        _sb.AppendLine("```");
+    }
 }

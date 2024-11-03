@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using UKFursBot.Commands;
 using UKFursBot.Context;
+using UKFursBot.HandlerInterfaces;
+using UKFursBot.SlashCommandParameterOptionStrategies;
 
 namespace UKFursBot;
 
@@ -29,15 +31,18 @@ public static class ServiceProvider
             service.AddSingletonOfType<IMessageEditedHandler>();
             service.AddSingletonOfType<IUserVoiceChannelChangedHandler>();
             service.AddSingletonOfType<IUserMessageReceivedHandler>();
+            service.AddSingletonOfType<IUserReplyMessageReceivedHandler>();
             service.AddSingleton<SocketMessageChannelManager>();
             service.AddSingleton<BotGuildUsers>();
-            
+            service.AddSingletonOfType<ISlashCommandParameterOptionStrategy>();
+            service.AddSingleton<SlashCommandParameterOptionStrategyResolver>();
             
             _instance = service.BuildServiceProvider();
         }
 
         return _instance;
     }
+    
     
    
 }

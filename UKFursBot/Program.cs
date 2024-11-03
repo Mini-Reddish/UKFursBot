@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using UKFursBot.Commands;
 using UKFursBot.Context;
 using UKFursBot.Entities;
+using UKFursBot.HandlerInterfaces;
 
 namespace UKFursBot;
 
@@ -56,20 +57,31 @@ class Program
         client.MessageUpdated += ClientOnMessageUpdated;
         client.UserVoiceStateUpdated += ClientOnUserVoiceChannelChanged;
         client.MessageReceived += ClientOnMessageReceived;
-
+        
         await Task.Delay(-1);
     }
 
     private async Task ClientOnMessageReceived(SocketMessage message)
     {
         var dbContext = _services.GetRequiredService<UKFursBotDbContext>();
-        var userMessageReceivedHandlers = _services.GetServices<IUserMessageReceivedHandler>();
-
+        
         if (message is not SocketUserMessage socketUserMessage)
             return;
-        foreach (var userMessageReceivedHandler in userMessageReceivedHandlers)
+        if (socketUserMessage.Type == MessageType.Default)
         {
-            await userMessageReceivedHandler.HandleMessageReceived(socketUserMessage);
+            var userMessageReceivedHandlers = _services.GetServices<IUserMessageReceivedHandler>();
+            foreach (var userMessageReceivedHandler in userMessageReceivedHandlers)
+            {
+                await userMessageReceivedHandler.HandleMessageReceived(socketUserMessage);
+            }
+        }
+        else if (socketUserMessage is { Type: MessageType.Reply, ReferencedMessage: not null })
+        {
+            var userReplyMessageReceivedHandlers = _services.GetServices<IUserReplyMessageReceivedHandler>();
+            foreach (var userReplyMessageReceivedHandler in userReplyMessageReceivedHandlers)
+            {
+                await userReplyMessageReceivedHandler.HandleMessageReceived(socketUserMessage, socketUserMessage.ReferencedMessage);
+            }
         }
 
         await dbContext.SaveChangesAsync();
@@ -169,7 +181,7 @@ class Program
                 var guildCommand = new SlashCommandBuilder()
                     .WithName(commandNameAttribute.Name.ToLowerInvariant())
                     .WithDescription(commandDescriptionAttribute.Description)
-                    .BuildOptionsFromParameters(slashCommand)
+                    .BuildOptionsFromParameters(slashCommand, _services)
                     .WithDefaultPermission(false)
                     .Build();
                 

@@ -42,7 +42,7 @@ public class SocketMessageChannelManager
         }
     }
     
-    public async Task SendLoggingErrorMessageAsync(string message, Exception exception)
+    public async Task SendLoggingErrorMessageAsync(string message, Exception? exception = null)
     {
         var configuration = _dbContext.BotConfigurations.First();
         
@@ -50,10 +50,16 @@ public class SocketMessageChannelManager
             return; 
 
         var messageContents = new RichTextBuilder()
-            .AddHeading1("Warning!")
-            .AddText(message)
-            .AddHeading2("Exception:")
-            .AddText(exception.Message);
+            .AddHeading1("ERROR!")
+            .AddText(message);
+        
+        if (exception is not null)
+        {
+            messageContents
+                .AddHeading2("Exception:")
+                .AddText(exception.Message);
+        }
+            
         
         var embedBuilder = new EmbedBuilder()
         {
@@ -77,5 +83,11 @@ public class SocketMessageChannelManager
         }
 
         await loggingChannel.SendMessageAsync(embed: embed);
+    }
+
+    public async Task<SocketTextChannel?> GetTextChannelFromIdAsync(ulong channelId)
+    {
+        var channel = await _socketClient.GetChannelAsync(channelId) as SocketTextChannel;
+        return channel;
     }
 }

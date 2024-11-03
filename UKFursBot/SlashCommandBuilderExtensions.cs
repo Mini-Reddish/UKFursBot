@@ -1,13 +1,15 @@
 ﻿using System.Reflection;
 using Discord;
 using Discord.WebSocket;
+using Microsoft.Extensions.DependencyInjection;
 using UKFursBot.Commands;
+using UKFursBot.SlashCommandParameterOptionStrategies;
 
 namespace UKFursBot;
 
 public static class SlashCommandBuilderExtensions
 {
-    public static SlashCommandBuilder BuildOptionsFromParameters(this SlashCommandBuilder builder, ISlashCommand command)
+    public static SlashCommandBuilder BuildOptionsFromParameters(this SlashCommandBuilder builder, ISlashCommand command, IServiceProvider serviceProvider)
     {
         var commandBaseType = command.GetType().BaseType;
         if (commandBaseType == null || commandBaseType.Name != typeof(BaseCommand<>).Name)
@@ -18,9 +20,27 @@ public static class SlashCommandBuilderExtensions
             return builder;
 
         var commandProperties = commandPropertiesType.GetProperties();
+
+        var slashCommandParameterOptionStrategyResolver = serviceProvider.GetRequiredService<SlashCommandParameterOptionStrategyResolver>();
+        
+        
         
         foreach (var propertyInfo in commandProperties)
         {
+            ISlashCommandParameterOptionStrategy? resolver;
+            if (propertyInfo.PropertyType.IsEnum)
+            {
+                resolver = slashCommandParameterOptionStrategyResolver.Resolve(propertyInfo.PropertyType.BaseType?.Name ?? String.Empty);
+            }
+            else
+            {
+                resolver = slashCommandParameterOptionStrategyResolver.Resolve(propertyInfo.PropertyType.Name);
+            }
+            if (resolver == null)
+            {
+                Console.WriteLine($"Unknown property type: {propertyInfo.PropertyType.FullName}");
+                continue;
+            }
             var description = "No description here";
             var name = propertyInfo.Name.ToLowerCaseWithUnderscores();
             var propertyDescriptionAttribute = propertyInfo.GetCustomAttribute(typeof(CommandParameterDescriptionAttribute)) as CommandParameterDescriptionAttribute;
@@ -28,41 +48,7 @@ public static class SlashCommandBuilderExtensions
             if (propertyDescriptionAttribute != null)
                 description = propertyDescriptionAttribute.Description;
             
-            if (propertyInfo.PropertyType == typeof(string))
-            {
-                builder.AddOption(name, ApplicationCommandOptionType.String, description, isRequired: isRequired);
-            }
-            else if (propertyInfo.PropertyType == typeof(IGuildChannel))
-            {
-                  builder.AddOption(name, ApplicationCommandOptionType.Channel, description, isRequired: isRequired);
-            }
-            else if (propertyInfo.PropertyType == typeof(SocketGuildUser))
-            {
-                builder.AddOption(name, ApplicationCommandOptionType.User, description, isRequired);
-            }
-            else if (propertyInfo.PropertyType == typeof(bool))
-            {
-                builder.AddOption(name, ApplicationCommandOptionType.Boolean, description, isRequired);
-            }
-            else if (propertyInfo.PropertyType == typeof(SocketRole))
-            {
-                builder.AddOption(name, ApplicationCommandOptionType.Role, description, isRequired);
-            }
-            else if (propertyInfo.PropertyType == typeof(ulong))
-            {
-                builder.AddOption(name, ApplicationCommandOptionType.String, description, isRequired);
-            }
-            else if (propertyInfo.PropertyType.IsEnum)
-            {
-                var choices = new List<ApplicationCommandOptionChoiceProperties>();
-                var type = propertyInfo.PropertyType;
-                var enumValues = type.GetEnumValues();
-                foreach (var enumValue in enumValues)
-                {
-                   choices.Add(new ApplicationCommandOptionChoiceProperties(){Name = enumValue.ToString(), Value = enumValue.GetHashCode().ToString()});
-                }
-                builder.AddOption(name, ApplicationCommandOptionType.String, description, isRequired, choices: choices.ToArray());
-            }
+            resolver.AddOption(builder, propertyInfo, name, description, isRequired);
         }
       
         return builder;
