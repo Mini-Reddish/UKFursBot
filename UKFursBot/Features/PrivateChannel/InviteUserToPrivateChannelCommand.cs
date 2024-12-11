@@ -4,9 +4,6 @@ using Discord.WebSocket;
 using UKFursBot.Commands;
 
 namespace UKFursBot.Features.PrivateChannel;
-
-[CommandName("Invite_to_private")]
-[CommandDescription("Invite a user to your current private channel.")]
 public class InviteUserToPrivateChannelCommand : BaseCommand<InviteUserToPrivateChannelCommandParameters>
 {
     private readonly SocketMessageChannelManager _messageChannelManager;
@@ -15,6 +12,10 @@ public class InviteUserToPrivateChannelCommand : BaseCommand<InviteUserToPrivate
     {
         _messageChannelManager = messageChannelManager;
     }
+
+    public override string CommandName => "Invite_to_private";
+    public override string CommandDescription => "Invite a user to your current private channel.";
+
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, InviteUserToPrivateChannelCommandParameters commandParameters)
     {
         if(socketSlashCommand.User is not SocketGuildUser userOfCommand)

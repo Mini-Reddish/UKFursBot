@@ -3,9 +3,6 @@ using Discord.WebSocket;
 using UKFursBot.Commands;
 
 namespace UKFursBot.Features.Diagnostics;
-
-[CommandName("diagnostics")]
-[CommandDescription("Run diagnostics checks to see if anything is set up incorrectly.")]
 public class SetupStatusChecklistCommand : BaseCommand<NoCommandParameters>
 {
     private readonly IEnumerable<IDiagnosticsCheck> _diagnosticsChecks;
@@ -14,6 +11,10 @@ public class SetupStatusChecklistCommand : BaseCommand<NoCommandParameters>
     {
         _diagnosticsChecks = diagnosticsChecks;
     }
+
+    public override string CommandName => "diagnostics";
+    public override string CommandDescription => "Run diagnostics checks to see if anything is set up incorrectly.";
+
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, NoCommandParameters commandParameters)
     {
         var response = new RichTextBuilder()

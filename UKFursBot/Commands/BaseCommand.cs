@@ -6,6 +6,8 @@ namespace UKFursBot.Commands;
 
 public abstract class BaseCommand<T> : ISlashCommand
 {
+    public abstract string CommandName { get; }
+    public abstract string CommandDescription { get; }
     private bool _hasFollowedUp;
     protected virtual bool SkipDefer => false;
     protected virtual bool IsEphemeral => true;
@@ -47,5 +49,6 @@ public abstract class BaseCommand<T> : ISlashCommand
 
 public interface ISlashCommand
 {
-
+    string CommandName { get; }
+    string CommandDescription { get; }
 }

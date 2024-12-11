@@ -5,9 +5,6 @@ using UKFursBot.Context;
 using UKFursBot.Entities;
 
 namespace UKFursBot.Features.Configuration;
-
-[CommandName("admin_set_channel_for")]
-[CommandDescription("Set the channel setting to output in the specified channel")]
 public class SetChannelForCommand : BaseCommand<SetChannelForCommandParameters>
 {
     private readonly UKFursBotDbContext _dbContext;
@@ -16,6 +13,10 @@ public class SetChannelForCommand : BaseCommand<SetChannelForCommandParameters>
     {
         _dbContext = dbContext;
     }
+
+    public override string CommandName => "admin_set_channel_for";
+    public override string CommandDescription => "Set the channel setting to output in the specified channel";
+
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, SetChannelForCommandParameters commandParameters)
     {
         if (commandParameters.Channel is not ITextChannel)
@@ -49,6 +50,9 @@ public class SetChannelForCommand : BaseCommand<SetChannelForCommandParameters>
                 break;
             case AdminMessageTypes.ModMail:
                 botConfiguration.ModMailChannel = commandParameters.Channel.Id;
+                break;
+            case AdminMessageTypes.MemberWelcome:
+                botConfiguration.MemberWelcomeChannelId = commandParameters.Channel.Id;
                 break;
         }
 

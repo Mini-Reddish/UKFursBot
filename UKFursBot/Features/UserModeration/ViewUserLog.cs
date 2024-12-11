@@ -5,9 +5,6 @@ using UKFursBot.Context;
 using UKFursBot.Entities;
 
 namespace UKFursBot.Features.UserModeration;
-
-[CommandName("get_user_log")]
-[CommandDescription("Retrieves all Bans, warns, and user notes")]
 public class ViewUserLogCommand : BaseCommand<ViewUserLogCommandParameters>
 {
     private readonly UKFursBotDbContext _dbContext;
@@ -19,6 +16,9 @@ public class ViewUserLogCommand : BaseCommand<ViewUserLogCommandParameters>
         _dbContext = dbContext;
         _socketClient = socketClient;
     }
+
+    public override string CommandName => "get_user_log";
+    public override string CommandDescription => "Retrieves all Bans, warns, and user notes";
 
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, ViewUserLogCommandParameters commandParameters)
     {

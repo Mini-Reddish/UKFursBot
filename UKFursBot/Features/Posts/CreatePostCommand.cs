@@ -6,13 +6,13 @@ using UKFursBot.Context;
 using UKFursBot.Entities;
 
 namespace UKFursBot.Features.Posts;
-
-[CommandName("create_post")]
-[CommandDescription("Starts the process for creating a new post.")]
 public class CreatePostCommand : BaseCommand<CreatePostCommandParameters>
 {
     private readonly UKFursBotDbContext _dbContext;
     private readonly SocketMessageChannelManager _socketMessageChannelManager;
+
+    public override string CommandName => "create_post";
+    public override string CommandDescription => "Starts the process for creating a new post.";
     protected override bool IsEphemeral => false;
 
     public CreatePostCommand(UKFursBotDbContext dbContext,SocketMessageChannelManager socketMessageChannelManager)

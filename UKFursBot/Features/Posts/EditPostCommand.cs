@@ -4,13 +4,12 @@ using UKFursBot.Commands;
 using UKFursBot.Context;
 
 namespace UKFursBot.Features.Posts;
-
-[CommandName("edit_post")]
-[CommandDescription("Opens a modal to allow editing an existing post.")]
 public class EditPostCommand : BaseCommand<EditPostCommandParameters>
 {
     private readonly UKFursBotDbContext _dbContext;
     private readonly SocketMessageChannelManager _socketMessageChannelManager;
+    public override string CommandName => "edit_post";
+    public override string CommandDescription => "Opens a modal to allow editing an existing post.";
     protected override bool IsEphemeral => false;
 
     public EditPostCommand(UKFursBotDbContext dbContext,SocketMessageChannelManager socketMessageChannelManager)

@@ -5,9 +5,6 @@ using UKFursBot.Context;
 using UKFursBot.Entities;
 
 namespace UKFursBot.Features.UserModeration;
-
-[CommandName("ban")]
-[CommandDescription("Ban the specified user, immediately or the next time they join if they have already left.")]
 public class BanCommand : BaseCommand<BanCommandParameters>
 {
     private readonly SocketMessageChannelManager _socketMessageChannelManager;
@@ -18,6 +15,12 @@ public class BanCommand : BaseCommand<BanCommandParameters>
         _socketMessageChannelManager = socketMessageChannelManager;
         _dbContext = dbContext;
     }
+
+    public override string CommandName => "ban";
+
+    public override string CommandDescription =>
+        "Ban the specified user, immediately or the next time they join if they have already left.";
+
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, BanCommandParameters commandParameters)
     {
         var sentToUser = false;

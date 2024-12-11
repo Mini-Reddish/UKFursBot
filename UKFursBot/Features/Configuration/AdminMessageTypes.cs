@@ -6,5 +6,6 @@ public enum AdminMessageTypes
     ErrorLogging,
     UserJoinLog,
     ModerationLog,
-    ModMail
+    ModMail,
+    MemberWelcome
 }

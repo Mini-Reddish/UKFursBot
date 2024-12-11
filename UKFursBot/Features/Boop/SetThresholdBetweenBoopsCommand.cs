@@ -5,9 +5,6 @@ using UKFursBot.Commands;
 using UKFursBot.Context;
 
 namespace UKFursBot.Features.Boop;
-
-[CommandName("set_boop_threshold")]
-[CommandDescription("Set the threshold in minutes of the boop command.  0 minutes will disable this feature.")]
 public class SetThresholdBetweenBoopsCommand : BaseCommand<SetThresholdBetweenBoopsCommandParameters>
 
 {
@@ -18,7 +15,12 @@ public class SetThresholdBetweenBoopsCommand : BaseCommand<SetThresholdBetweenBo
         _dbContext = dbContext;
 
     }
-    
+
+    public override string CommandName => "set_boop_threshold";
+
+    public override string CommandDescription =>
+        "Set the threshold in minutes of the boop command.  0 minutes will disable this feature.";
+
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, SetThresholdBetweenBoopsCommandParameters commandParameters)
     {
         var config = await _dbContext.BotConfigurations.FirstAsync();

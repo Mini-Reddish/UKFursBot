@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+﻿using System.Windows.Input;
 using Discord;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +37,14 @@ class Program
         var config = _services.GetRequiredService<IConfiguration>();
         var client = _services.GetRequiredService<DiscordSocketClient>();
         _botGuildUsers = _services.GetRequiredService<BotGuildUsers>();
+        var commandManager = _services.GetRequiredService<ICommandManager>();
+        var commands = _services.GetServices<ISlashCommand>();
+        
+        foreach (var slashCommand in commands)
+        {
+            commandManager.AddSlashCommand(slashCommand);
+        }
+        
 
         client.Log += LogAsync;
         try
@@ -146,13 +154,10 @@ class Program
     private async Task ClientOnSlashCommandExecuted(SocketSlashCommand arg)
     {
         var dbContext = _services.GetRequiredService<UKFursBotDbContext>();
-        var command = _services.GetServices<ISlashCommand>().FirstOrDefault(x =>
-        {
-            var commandNameAttribute = x.GetType().GetCustomAttribute<CommandNameAttribute>();
-            return string.Equals(commandNameAttribute?.Name, arg.CommandName, StringComparison.InvariantCultureIgnoreCase);
-        });
+        var commandManager = _services.GetRequiredService<ICommandManager>();
+        var command = commandManager.TryGetSlashCommand(arg.CommandName);
         
-        if (command?.GetType().BaseType == null)
+        if (command == null)
         {
             return;
         }
@@ -172,23 +177,17 @@ class Program
         await InitialiseGuildBotConfigurationInDb(guild);
 
         _botGuildUsers.TryAdd(guild.Id, guild.CurrentUser);
-        var commands = _services.GetServices<ISlashCommand>();
+        var commandManager = _services.GetRequiredService<ICommandManager>();
         var guildCommands = new List<ApplicationCommandProperties>();
-        foreach (var slashCommand in commands)
+        foreach (var slashCommand in commandManager.GetAllSlashCommands())
         {
+            var commandName = slashCommand.CommandName;
+            var commandDescription = slashCommand.CommandDescription;
             try
             {
-                var commandNameAttribute = slashCommand.GetType().GetCustomAttribute<CommandNameAttribute>();
-                var commandDescriptionAttribute = slashCommand.GetType().GetCustomAttribute<CommandDescriptionAttribute>();
-
-                if (commandNameAttribute == null || commandDescriptionAttribute == null)
-                {
-                    Console.WriteLine($"Unable to create the command for {slashCommand.GetType().Name} due to missing Name and/or description attributes.");
-                    continue;
-                }
                 var guildCommand = new SlashCommandBuilder()
-                    .WithName(commandNameAttribute.Name.ToLowerInvariant())
-                    .WithDescription(commandDescriptionAttribute.Description)
+                    .WithName(commandName.ToLowerInvariant())
+                    .WithDescription(commandDescription)
                     .BuildOptionsFromParameters(slashCommand, _services)
                     .WithDefaultPermission(false)
                     .Build();
@@ -197,6 +196,7 @@ class Program
             }
             catch (Exception e)
             {
+                Console.WriteLine($"Error creating command {commandName}");
                 Console.WriteLine(e);
             }
         }
@@ -207,7 +207,7 @@ class Program
     private static async Task InitialiseGuildBotConfigurationInDb(SocketGuild guild)
     {
         var dbContext = _services.GetRequiredService<UKFursBotDbContext>();
-        var guildBotConfiguration = dbContext.BotConfigurations.FirstOrDefault(x => x.GuildId == guild.Id);
+        var guildBotConfiguration = dbContext.BotConfigurations.FirstOrDefault();
         if (guildBotConfiguration == null)
         {
             dbContext.BotConfigurations.Add(new BotConfiguration()

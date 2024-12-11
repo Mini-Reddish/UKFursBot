@@ -3,9 +3,6 @@ using UKFursBot.Commands;
 using UKFursBot.Context;
 
 namespace UKFursBot.Features.UserModeration;
-
-[CommandName("remove_warn")]
-[CommandDescription("Removes the specified warning from the current user")]
 public class RemoveWarnCommand : BaseCommand<RemoveWarnCommandParameters>
 {
     private readonly UKFursBotDbContext _dbContext;
@@ -16,6 +13,10 @@ public class RemoveWarnCommand : BaseCommand<RemoveWarnCommandParameters>
         _dbContext = dbContext;
         _client = client;
     }
+
+    public override string CommandName => "remove_warn";
+    public override string CommandDescription => "Removes the specified warning from the current user";
+
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, RemoveWarnCommandParameters commandParameters)
     {
         if (commandParameters.User == null && commandParameters.UserId == 0)

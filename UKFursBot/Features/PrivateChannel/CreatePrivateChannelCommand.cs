@@ -3,9 +3,6 @@ using Discord.WebSocket;
 using UKFursBot.Commands;
 
 namespace UKFursBot.Features.PrivateChannel;
-
-[CommandName("Create_private_channel")]
-[CommandDescription("Creates a private voice channel.")]
 public class CreatePrivateChannelCommand : BaseCommand<NoCommandParameters>
 {
     private readonly BotGuildUsers _botGuildUsers;
@@ -25,6 +22,9 @@ public class CreatePrivateChannelCommand : BaseCommand<NoCommandParameters>
         }
         return PrivateChannelConstants.PrivateChannelPrefix +(maxPrivateChannelNumber + 1);
     }
+
+    public override string CommandName => "Create_private_channel";
+    public override string CommandDescription => "Creates a private voice channel.";
 
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, NoCommandParameters commandParameters)
     {

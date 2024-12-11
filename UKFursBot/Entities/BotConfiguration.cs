@@ -17,4 +17,7 @@ public class BotConfiguration
     public virtual bool UserJoinLoggingEnabled { get; set; }
     public virtual string ModMailResponseMessage { get; set; } = String.Empty;
     public virtual long MinutesThresholdBetweenBoops { get; set; }
+    public virtual ulong MemberRoleId { get; set; }
+    public virtual ulong MemberWelcomeChannelId { get; set; }
+    public virtual string MemberWelcomeMessage { get; set; }
 }

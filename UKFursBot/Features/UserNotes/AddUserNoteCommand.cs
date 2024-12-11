@@ -5,9 +5,6 @@ using UKFursBot.Context;
 using UKFursBot.Entities;
 
 namespace UKFursBot.Features.UserNotes;
-
-[CommandName("add_note")]
-[CommandDescription("Add a note to the specified user")]
 public class AddUserNoteCommand : BaseCommand<AddUserNoteCommandParameters>
 {
     private readonly UKFursBotDbContext _dbContext;
@@ -18,6 +15,9 @@ public class AddUserNoteCommand : BaseCommand<AddUserNoteCommandParameters>
         _dbContext = dbContext;
         _client = client;
     }
+
+    public override string CommandName => "add_note";
+    public override string CommandDescription => "Add a note to the specified user";
 
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, AddUserNoteCommandParameters commandParameters)
     {

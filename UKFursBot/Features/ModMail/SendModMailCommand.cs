@@ -4,9 +4,6 @@ using UKFursBot.Commands;
 using UKFursBot.Context;
 
 namespace UKFursBot.Features.ModMail;
-
-[CommandName("modmail")]
-[CommandDescription("Send a message to the moderators.")]
 public class SendModMailCommand : BaseCommand<SendModMailCommandParameters>
 {
     private readonly UKFursBotDbContext _dbContext;
@@ -19,6 +16,10 @@ public class SendModMailCommand : BaseCommand<SendModMailCommandParameters>
         _socketClient = socketClient;
         _messageChannelManager = messageChannelManager;
     }
+
+    public override string CommandName => "modmail";
+    public override string CommandDescription => "Send a message to the moderators.";
+
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, SendModMailCommandParameters commandParameters)
     {
         var botConfig = _dbContext.BotConfigurations.First();

@@ -4,10 +4,6 @@ using UKFursBot.Commands;
 using UKFursBot.Context;
 
 namespace UKFursBot.Features.Posts;
-
-
-[CommandName("delete_post")]
-[CommandDescription("Deletes the post with the given Post ID")]
 public class DeletePostCommand : BaseCommand<DeletePostCommandParameters>
 {
     private readonly UKFursBotDbContext _dbContext;
@@ -18,6 +14,10 @@ public class DeletePostCommand : BaseCommand<DeletePostCommandParameters>
         _dbContext = dbContext;
         _socketMessageChannelManager = socketMessageChannelManager;
     }
+
+    public override string CommandName => "delete_post";
+    public override string CommandDescription => "Deletes the post with the given Post ID";
+
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, DeletePostCommandParameters commandParameters)
     {
         var createdPostForDeleting =

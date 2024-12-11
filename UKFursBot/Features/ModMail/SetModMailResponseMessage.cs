@@ -5,9 +5,6 @@ using UKFursBot.Context;
 
 namespace UKFursBot.Features.ModMail;
 
-
-[CommandName("set_modmail_response")]
-[CommandDescription("Sets the response given to a user when they send in a modmail message")]
 public class SetModMailResponseMessage  : BaseCommand<SetModMailResponseMessageCommandParameters>
 {
     private readonly UKFursBotDbContext _dbContext;
@@ -18,7 +15,11 @@ public class SetModMailResponseMessage  : BaseCommand<SetModMailResponseMessageC
         _dbContext = dbContext;
         _socketMessageChannelManager = socketMessageChannelManager;
     }
-    
+
+    public override string CommandName => "set_modmail_response";
+
+    public override string CommandDescription => "Sets the response given to a user when they send in a modmail message";
+
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, SetModMailResponseMessageCommandParameters commandParameters)
     {
         var botConfig = _dbContext.BotConfigurations.First();

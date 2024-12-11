@@ -5,9 +5,6 @@ using UKFursBot.Context;
 using UKFursBot.Entities;
 
 namespace UKFursBot.Features.UserModeration;
-
-[CommandName("warn")]
-[CommandDescription("Send a warning to the current user")]
 public class WarnCommand : BaseCommand<WarnCommandParameters>
 {
     private readonly SocketMessageChannelManager _socketMessageChannelManager;
@@ -18,6 +15,10 @@ public class WarnCommand : BaseCommand<WarnCommandParameters>
         _socketMessageChannelManager = socketMessageChannelManager;
         _dbContext = dbContext;
     }
+
+    public override string CommandName => "warn";
+    public override string CommandDescription => "Send a warning to the current user";
+
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, WarnCommandParameters commandParameters)
     {
         var sentToUser = false;

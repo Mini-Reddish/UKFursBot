@@ -3,9 +3,6 @@ using UKFursBot.Commands;
 using UKFursBot.Context;
 
 namespace UKFursBot.Features.Boop;
-
-[CommandName("Boop")]
-[CommandDescription("Boops you.  UwU")]
 public class BoopUserCommand : BaseCommand<BoopUserCommandParameters>
 {
     private readonly UKFursBotDbContext _dbContext;
@@ -14,6 +11,10 @@ public class BoopUserCommand : BaseCommand<BoopUserCommandParameters>
     {
         _dbContext = dbContext;
     }
+
+    public override string CommandName => "Boop";
+    public override string CommandDescription => "Boops you.  UwU";
+
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, BoopUserCommandParameters commandParameters)
     {
         var cooldown = _dbContext.BotConfigurations.First().MinutesThresholdBetweenBoops;

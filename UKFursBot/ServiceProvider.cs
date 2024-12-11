@@ -26,7 +26,9 @@ public static class ServiceProvider
             service.AddDbContext<UKFursBotDbContext>();
             service.AddDiscordClient();
             service.AddTransientOfType<IDiagnosticsCheck>();
+            service.AddSingleton<ICommandManager, CommandManager>();
             service.AddTransientOfType<ISlashCommand>();
+            service.AddTransientOfTypeAsConcreteType<ISlashCommand>();
             service.AddSingletonOfType<IUserJoinedHandler>();
             service.AddSingletonOfType<IMessageEditedHandler>();
             service.AddSingletonOfType<IUserVoiceChannelChangedHandler>();
@@ -36,7 +38,6 @@ public static class ServiceProvider
             service.AddSingleton<BotGuildUsers>();
             service.AddSingletonOfType<ISlashCommandParameterOptionStrategy>();
             service.AddSingleton<SlashCommandParameterOptionStrategyResolver>();
-            
             _instance = service.BuildServiceProvider();
         }
 
@@ -73,21 +74,9 @@ static class ServiceCollectionExtensions
         });
 
         service.AddSingleton(client);
+        service.AddSingleton<IDiscordClient>(client);
     }
-
-    public static void AddCommands(this ServiceCollection service)
-    {
-       var currentAssembly = Assembly.GetExecutingAssembly();
-
-        var types = currentAssembly.ExportedTypes.Where(x =>
-            x is { IsClass: true, IsPublic: true, BaseType: not null, BaseType.IsGenericType: true } && 
-            x.BaseType.GetGenericTypeDefinition().IsAssignableTo(typeof(BaseCommand<>))).ToList();
-
-        foreach (var type in types)
-        {
-            service.AddSingleton(typeof(BaseCommand<>).MakeGenericType(type), type);
-        }
-    }
+    
     public static void AddSingletonOfType<T>(this ServiceCollection service)
     {
         var currentAssembly = Assembly.GetExecutingAssembly();
@@ -109,6 +98,19 @@ static class ServiceCollectionExtensions
         foreach (var type in types)
         {
             service.AddTransient(typeof(T), type);
+        }
+    }
+
+    public static void AddTransientOfTypeAsConcreteType<T>(this ServiceCollection service)
+    {
+        
+        var currentAssembly = Assembly.GetExecutingAssembly();
+
+        var types = currentAssembly.ExportedTypes.Where(x => x is { IsClass: true, IsPublic: true, IsAbstract: false } && x.GetInterfaces().Any(y=> y == typeof(T))).ToList();
+
+        foreach (var type in types)
+        {
+            service.AddTransient(type);
         }
     }
 }

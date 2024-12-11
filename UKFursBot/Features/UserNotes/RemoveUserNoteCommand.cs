@@ -4,9 +4,6 @@ using UKFursBot.Commands;
 using UKFursBot.Context;
 
 namespace UKFursBot.Features.UserNotes;
-
-[CommandName("remove_note")]
-[CommandDescription("Removes the specified note ID from the specified user.")]
 public class RemoveUserNoteCommand  : BaseCommand<RemoveUserNoteCommandParameters>
 {
     private readonly UKFursBotDbContext _dbContext;
@@ -17,6 +14,10 @@ public class RemoveUserNoteCommand  : BaseCommand<RemoveUserNoteCommandParameter
         _dbContext = dbContext;
         _client = client;
     }
+
+    public override string CommandName => "remove_note";
+    public override string CommandDescription => "Removes the specified note ID from the specified user.";
+
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, RemoveUserNoteCommandParameters commandParameters)
     {
         if (commandParameters.User == null && commandParameters.UserId == 0)
