@@ -3,17 +3,12 @@ using UKFursBot.Commands;
 using UKFursBot.Context;
 
 namespace UKFursBot.Features.UserModeration;
-public class RemoveWarnCommand : BaseCommand<RemoveWarnCommandParameters>
+public class RemoveWarnCommand(
+    UKFursBotDbContext dbContext,
+    DiscordSocketClient client,
+    SocketMessageChannelManager socketMessageChannelManager)
+    : BaseCommand<RemoveWarnCommandParameters>(socketMessageChannelManager)
 {
-    private readonly UKFursBotDbContext _dbContext;
-    private readonly DiscordSocketClient _client;
-
-    public RemoveWarnCommand(UKFursBotDbContext dbContext, DiscordSocketClient client)
-    {
-        _dbContext = dbContext;
-        _client = client;
-    }
-
     public override string CommandName => "remove_warn";
     public override string CommandDescription => "Removes the specified warning from the current user";
 
@@ -27,7 +22,7 @@ public class RemoveWarnCommand : BaseCommand<RemoveWarnCommandParameters>
         
         var userId = commandParameters.User?.Id ?? commandParameters.UserId;
         
-        var settings = _dbContext.BotConfigurations.First();
+        var settings = dbContext.BotConfigurations.First();
         
         if (settings.ModerationLoggingChannel == 0)
         {
@@ -35,8 +30,8 @@ public class RemoveWarnCommand : BaseCommand<RemoveWarnCommandParameters>
             return;
         }
 
-        var warning = _dbContext.Warnings.FirstOrDefault(warning => warning.UserId == userId && warning.Id == commandParameters.WarningId);
-        var user = await _client.GetUserAsync(userId);
+        var warning = dbContext.Warnings.FirstOrDefault(warning => warning.UserId == userId && warning.Id == commandParameters.WarningId);
+        var user = await client.GetUserAsync(userId);
             
         if (warning == null)
         {

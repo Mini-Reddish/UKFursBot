@@ -5,17 +5,12 @@ using UKFursBot.Commands;
 using UKFursBot.Context;
 
 namespace UKFursBot.Features.Boop;
-public class SetThresholdBetweenBoopsCommand : BaseCommand<SetThresholdBetweenBoopsCommandParameters>
+public class SetThresholdBetweenBoopsCommand(
+    UKFursBotDbContext dbContext,
+    SocketMessageChannelManager socketMessageChannelManager)
+    : BaseCommand<SetThresholdBetweenBoopsCommandParameters>(socketMessageChannelManager)
 
 {
-    private readonly UKFursBotDbContext _dbContext;
-
-    public SetThresholdBetweenBoopsCommand(UKFursBotDbContext dbContext)
-    {
-        _dbContext = dbContext;
-
-    }
-
     public override string CommandName => "set_boop_threshold";
 
     public override string CommandDescription =>
@@ -23,7 +18,7 @@ public class SetThresholdBetweenBoopsCommand : BaseCommand<SetThresholdBetweenBo
 
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, SetThresholdBetweenBoopsCommandParameters commandParameters)
     {
-        var config = await _dbContext.BotConfigurations.FirstAsync();
+        var config = await dbContext.BotConfigurations.FirstAsync();
 
         config.MinutesThresholdBetweenBoops = commandParameters.Minutes;
     }

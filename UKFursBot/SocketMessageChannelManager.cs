@@ -71,6 +71,14 @@ public class SocketMessageChannelManager
         await loggingChannel.SendMessageAsync(string.Empty, false, embedBuilder.Build());
     }
 
+    public async Task SendModerationLoggingMessageAsync(string text)
+    {
+        var embed = new EmbedBuilder().WithColor(Color.Blue)
+            .WithDescription(text).Build();
+
+        await SendModerationLoggingMessageAsync(embed);
+    }
+
     public async Task SendModerationLoggingMessageAsync(Embed embed)
     {
         var configuration = _dbContext.BotConfigurations.First();

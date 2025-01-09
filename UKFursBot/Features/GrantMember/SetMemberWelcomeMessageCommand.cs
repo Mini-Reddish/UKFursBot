@@ -5,20 +5,18 @@ using UKFursBot.Context;
 
 namespace UKFursBot.Features.GrantMember;
 
-public class SetMemberWelcomeMessageCommand : BaseCommand<SetMemberWelcomeMessageCommandParameters>
+public class SetMemberWelcomeMessageCommand(
+    UKFursBotDbContext dbContext,
+    SocketMessageChannelManager socketMessageChannelManager)
+    : BaseCommand<SetMemberWelcomeMessageCommandParameters>(socketMessageChannelManager)
 {
-    private readonly UKFursBotDbContext _dbContext;
     public override string CommandName => "set_Member_welcome_message";
 
     public override string CommandDescription => "Sets the welcome message when granting the member role to a user.";
 
-    public SetMemberWelcomeMessageCommand(UKFursBotDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, SetMemberWelcomeMessageCommandParameters commandParameters)
     {
-        var configuration = await _dbContext.BotConfigurations.FirstAsync();
+        var configuration = await dbContext.BotConfigurations.FirstAsync();
 
         configuration.MemberWelcomeMessage = commandParameters.WelcomeMessage;
 

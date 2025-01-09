@@ -4,23 +4,18 @@ using UKFursBot.Commands;
 using UKFursBot.Context;
 
 namespace UKFursBot.Features.Posts;
-public class EditPostCommand : BaseCommand<EditPostCommandParameters>
+public class EditPostCommand(UKFursBotDbContext dbContext, SocketMessageChannelManager socketMessageChannelManager)
+    : BaseCommand<EditPostCommandParameters>(socketMessageChannelManager)
 {
-    private readonly UKFursBotDbContext _dbContext;
-    private readonly SocketMessageChannelManager _socketMessageChannelManager;
+    private readonly SocketMessageChannelManager _socketMessageChannelManager = socketMessageChannelManager;
     public override string CommandName => "edit_post";
     public override string CommandDescription => "Opens a modal to allow editing an existing post.";
     protected override bool IsEphemeral => false;
 
-    public EditPostCommand(UKFursBotDbContext dbContext,SocketMessageChannelManager socketMessageChannelManager)
-    {       
-        _dbContext = dbContext;
-        _socketMessageChannelManager = socketMessageChannelManager;
-    }
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, EditPostCommandParameters commandParameters)
     {
         var createdPostForEditing =
-            await _dbContext.CreatePosts.SingleOrDefaultAsync(x => x.MessageId == commandParameters.PostId);
+            await dbContext.CreatePosts.SingleOrDefaultAsync(x => x.MessageId == commandParameters.PostId);
 
         if (createdPostForEditing == null)
         {
@@ -38,7 +33,7 @@ public class EditPostCommand : BaseCommand<EditPostCommandParameters>
         if (messageChannel == null)
         {
             await _socketMessageChannelManager.SendLoggingErrorMessageAsync($"Could not find message channel with ID: {createdPostForEditing.ChannelId}.  Removing from the database...");
-            _dbContext.CreatePosts.Remove(createdPostForEditing);
+            dbContext.CreatePosts.Remove(createdPostForEditing);
             return;
         }
         var existingMessage = await messageChannel.GetMessageAsync(createdPostForEditing.MessageId);
@@ -46,7 +41,7 @@ public class EditPostCommand : BaseCommand<EditPostCommandParameters>
         if (existingMessage == null)
         {
             await _socketMessageChannelManager.SendLoggingErrorMessageAsync($"Could not find message with ID: {createdPostForEditing.MessageId}.  Removing from the database...");
-            _dbContext.CreatePosts.Remove(createdPostForEditing);
+            dbContext.CreatePosts.Remove(createdPostForEditing);
             return;
         }
 

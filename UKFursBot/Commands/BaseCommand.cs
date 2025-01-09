@@ -4,7 +4,7 @@ using Discord.WebSocket;
 
 namespace UKFursBot.Commands;
 
-public abstract class BaseCommand<T> : ISlashCommand
+public abstract class BaseCommand<T>(SocketMessageChannelManager socketMessageChannelManager) : ISlashCommand
 {
     public abstract string CommandName { get; }
     public abstract string CommandDescription { get; }
@@ -14,6 +14,7 @@ public abstract class BaseCommand<T> : ISlashCommand
     private SocketSlashCommand? _socketSlashCommand;
     public async Task Execute(SocketSlashCommand socketSlashCommand, T commandParameters)
     {
+        socketMessageChannelManager.SendModerationLoggingMessageAsync($"Command: {CommandName} used by {socketSlashCommand.User.Username}");
         _socketSlashCommand = socketSlashCommand;
         if(!SkipDefer)
             await socketSlashCommand.DeferAsync(ephemeral: IsEphemeral);

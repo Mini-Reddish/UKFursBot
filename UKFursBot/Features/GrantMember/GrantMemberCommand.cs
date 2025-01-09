@@ -6,23 +6,17 @@ using UKFursBot.Context;
 
 namespace UKFursBot.Features.GrantMember;
 
-public class GrantMemberCommand : BaseCommand<GrantMemberCommandParameters>
+public class GrantMemberCommand(UKFursBotDbContext dbContext, SocketMessageChannelManager socketMessageChannelManager)
+    : BaseCommand<GrantMemberCommandParameters>(socketMessageChannelManager)
 {
-    private readonly UKFursBotDbContext _dbContext;
-    private readonly SocketMessageChannelManager _socketMessageChannelManager;
-
-    public GrantMemberCommand(UKFursBotDbContext dbContext, SocketMessageChannelManager socketMessageChannelManager)
-    {
-        _dbContext = dbContext;
-        _socketMessageChannelManager = socketMessageChannelManager;
-    }
+    private readonly SocketMessageChannelManager _socketMessageChannelManager = socketMessageChannelManager;
 
     public override string CommandName => "member";
     public override string CommandDescription => "Grant the specified user the member role";
     
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, GrantMemberCommandParameters commandParameters)
     {
-        var config = await _dbContext.BotConfigurations.FirstAsync();
+        var config = await dbContext.BotConfigurations.FirstAsync();
         var memberRoleId = config.MemberRoleId;
         if (socketSlashCommand.Channel is not SocketGuildChannel socketGuildChannel)
             return;

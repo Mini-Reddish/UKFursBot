@@ -5,24 +5,18 @@ using UKFursBot.Context;
 
 namespace UKFursBot.Features.ModMail;
 
-public class SetModMailResponseMessage  : BaseCommand<SetModMailResponseMessageCommandParameters>
+public class SetModMailResponseMessage(
+    UKFursBotDbContext dbContext,
+    SocketMessageChannelManager socketMessageChannelManager)
+    : BaseCommand<SetModMailResponseMessageCommandParameters>(socketMessageChannelManager)
 {
-    private readonly UKFursBotDbContext _dbContext;
-    private readonly SocketMessageChannelManager _socketMessageChannelManager;
-
-    public SetModMailResponseMessage(UKFursBotDbContext dbContext, SocketMessageChannelManager socketMessageChannelManager)
-    {
-        _dbContext = dbContext;
-        _socketMessageChannelManager = socketMessageChannelManager;
-    }
-
     public override string CommandName => "set_modmail_response";
 
     public override string CommandDescription => "Sets the response given to a user when they send in a modmail message";
 
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, SetModMailResponseMessageCommandParameters commandParameters)
     {
-        var botConfig = _dbContext.BotConfigurations.First();
+        var botConfig = dbContext.BotConfigurations.First();
 
         if (string.IsNullOrWhiteSpace(commandParameters.Message))
         {
@@ -43,7 +37,7 @@ public class SetModMailResponseMessage  : BaseCommand<SetModMailResponseMessageC
             Description = content.Build(),
         }.Build();
         
-        await _socketMessageChannelManager.SendModerationLoggingMessageAsync(embed);
+        await socketMessageChannelManager.SendModerationLoggingMessageAsync(embed);
     }
 }
 

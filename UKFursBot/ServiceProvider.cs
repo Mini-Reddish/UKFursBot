@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using UKFursBot.Commands;
 using UKFursBot.Context;
+using UKFursBot.Features.UserModeration;
 using UKFursBot.HandlerInterfaces;
 using UKFursBot.SlashCommandParameterOptionStrategies;
 
@@ -38,6 +39,7 @@ public static class ServiceProvider
             service.AddSingleton<BotGuildUsers>();
             service.AddSingletonOfType<ISlashCommandParameterOptionStrategy>();
             service.AddSingleton<SlashCommandParameterOptionStrategyResolver>();
+            service.AddSingleton<IBanUserAction, BanUserAction>();
             _instance = service.BuildServiceProvider();
         }
 

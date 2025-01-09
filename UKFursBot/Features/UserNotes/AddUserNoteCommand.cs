@@ -5,23 +5,18 @@ using UKFursBot.Context;
 using UKFursBot.Entities;
 
 namespace UKFursBot.Features.UserNotes;
-public class AddUserNoteCommand : BaseCommand<AddUserNoteCommandParameters>
+public class AddUserNoteCommand(
+    UKFursBotDbContext dbContext,
+    DiscordSocketClient client,
+    SocketMessageChannelManager socketMessageChannelManager)
+    : BaseCommand<AddUserNoteCommandParameters>(socketMessageChannelManager)
 {
-    private readonly UKFursBotDbContext _dbContext;
-    private readonly DiscordSocketClient _client;
-
-    public AddUserNoteCommand(UKFursBotDbContext dbContext, DiscordSocketClient client)
-    {
-        _dbContext = dbContext;
-        _client = client;
-    }
-
     public override string CommandName => "add_note";
     public override string CommandDescription => "Add a note to the specified user";
 
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, AddUserNoteCommandParameters commandParameters)
     {
-        var settings = _dbContext.BotConfigurations.FirstOrDefault();
+        var settings = dbContext.BotConfigurations.FirstOrDefault();
         if (settings == null) 
             return;
         
@@ -39,7 +34,7 @@ public class AddUserNoteCommand : BaseCommand<AddUserNoteCommandParameters>
             DateAdded = DateTime.UtcNow,
         };
         
-        _dbContext.UserNotes.Add(userNote);
+        dbContext.UserNotes.Add(userNote);
 
         var response = new RichTextBuilder()
             .AddHeading2("User Note Added")
@@ -53,7 +48,7 @@ public class AddUserNoteCommand : BaseCommand<AddUserNoteCommandParameters>
             Description = response.Build()
         }.Build();
         
-        var channel = await _client.GetChannelAsync(settings.ModerationLoggingChannel);
+        var channel = await client.GetChannelAsync(settings.ModerationLoggingChannel);
         if (channel is SocketTextChannel textChannel)
         {
             await textChannel.SendMessageAsync(embed: embed);

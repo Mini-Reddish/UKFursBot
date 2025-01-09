@@ -5,16 +5,10 @@ using UKFursBot.Context;
 using UKFursBot.Entities;
 
 namespace UKFursBot.Features.UserModeration;
-public class WarnCommand : BaseCommand<WarnCommandParameters>
+public class WarnCommand(UKFursBotDbContext dbContext, SocketMessageChannelManager socketMessageChannelManager)
+    : BaseCommand<WarnCommandParameters>(socketMessageChannelManager)
 {
-    private readonly SocketMessageChannelManager _socketMessageChannelManager;
-    private readonly UKFursBotDbContext _dbContext;
-
-    public WarnCommand(SocketMessageChannelManager socketMessageChannelManager, UKFursBotDbContext dbContext)
-    {
-        _socketMessageChannelManager = socketMessageChannelManager;
-        _dbContext = dbContext;
-    }
+    private readonly SocketMessageChannelManager _socketMessageChannelManager = socketMessageChannelManager;
 
     public override string CommandName => "warn";
     public override string CommandDescription => "Send a warning to the current user";
@@ -33,7 +27,7 @@ public class WarnCommand : BaseCommand<WarnCommandParameters>
             await _socketMessageChannelManager.SendLoggingErrorMessageAsync("Unable to DM User with warning", e);
         }
 
-        _dbContext.Warnings.Add(new Warning()
+        dbContext.Warnings.Add(new Warning()
         {
             DateAdded = DateTime.UtcNow,
             Reason = commandParameters.Message,

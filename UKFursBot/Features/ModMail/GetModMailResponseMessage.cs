@@ -4,15 +4,11 @@ using UKFursBot.Commands;
 using UKFursBot.Context;
 
 namespace UKFursBot.Features.ModMail;
-public class GetModMailResponseMessage  : BaseCommand<NoCommandParameters>
+public class GetModMailResponseMessage(
+    UKFursBotDbContext dbContext,
+    SocketMessageChannelManager socketMessageChannelManager)
+    : BaseCommand<NoCommandParameters>(socketMessageChannelManager)
 {
-    private readonly UKFursBotDbContext _dbContext;
-
-    public GetModMailResponseMessage(UKFursBotDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public override string CommandName => "get_modmail_response";
 
     public override string CommandDescription =>
@@ -20,7 +16,7 @@ public class GetModMailResponseMessage  : BaseCommand<NoCommandParameters>
 
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, NoCommandParameters commandParameters)
     {
-        var botConfig = _dbContext.BotConfigurations.First();
+        var botConfig = dbContext.BotConfigurations.First();
         
         var content = new RichTextBuilder()
             .AddHeading1("Modmail received Response")

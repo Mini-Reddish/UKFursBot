@@ -5,18 +5,12 @@ using UKFursBot.Context;
 using UKFursBot.Entities;
 
 namespace UKFursBot.Features.UserModeration;
-public class ViewUserLogCommand : BaseCommand<ViewUserLogCommandParameters>
+public class ViewUserLogCommand(
+    UKFursBotDbContext dbContext,
+    DiscordSocketClient socketClient,
+    SocketMessageChannelManager socketMessageChannelManager)
+    : BaseCommand<ViewUserLogCommandParameters>(socketMessageChannelManager)
 {
-    private readonly UKFursBotDbContext _dbContext;
-    private readonly DiscordSocketClient _socketClient;
-
-
-    public ViewUserLogCommand(UKFursBotDbContext dbContext, DiscordSocketClient socketClient)
-    {
-        _dbContext = dbContext;
-        _socketClient = socketClient;
-    }
-
     public override string CommandName => "get_user_log";
     public override string CommandDescription => "Retrieves all Bans, warns, and user notes";
 
@@ -28,12 +22,12 @@ public class ViewUserLogCommand : BaseCommand<ViewUserLogCommandParameters>
             return;
         }
 
-        var guildSettings = _dbContext.BotConfigurations.First();
+        var guildSettings = dbContext.BotConfigurations.First();
         var userId = commandParameters.User?.Id ?? commandParameters.UserId;
 
-        var bans = _dbContext.BanLogs.Where(x => x.UserId == userId).ToList();
-        var warnings = _dbContext.Warnings.Where(x => x.UserId == userId).ToList();
-        var userNotes = _dbContext.UserNotes.Where(x => x.UserId == userId).ToList();
+        var bans = dbContext.BanLogs.Where(x => x.UserId == userId).ToList();
+        var warnings = dbContext.Warnings.Where(x => x.UserId == userId).ToList();
+        var userNotes = dbContext.UserNotes.Where(x => x.UserId == userId).ToList();
         var content = new RichTextBuilder()
             .AddHeading2($"<@{userId}>'s User Log");
         
@@ -66,7 +60,7 @@ public class ViewUserLogCommand : BaseCommand<ViewUserLogCommandParameters>
             Description = content.Build()
         }.Build();
 
-        var moderationMessageChannel = await _socketClient.GetTextChannelAsync(guildSettings.ModerationLoggingChannel);
+        var moderationMessageChannel = await socketClient.GetTextChannelAsync(guildSettings.ModerationLoggingChannel);
         if (moderationMessageChannel != null)
         {
             await moderationMessageChannel.SendMessageAsync($"<@{socketSlashCommand.User.Id}>", embed: embed);

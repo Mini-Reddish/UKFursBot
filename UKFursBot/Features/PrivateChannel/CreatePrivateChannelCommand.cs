@@ -3,15 +3,11 @@ using Discord.WebSocket;
 using UKFursBot.Commands;
 
 namespace UKFursBot.Features.PrivateChannel;
-public class CreatePrivateChannelCommand : BaseCommand<NoCommandParameters>
+public class CreatePrivateChannelCommand(
+    BotGuildUsers botGuildUsers,
+    SocketMessageChannelManager socketMessageChannelManager)
+    : BaseCommand<NoCommandParameters>(socketMessageChannelManager)
 {
-    private readonly BotGuildUsers _botGuildUsers;
-
-    public CreatePrivateChannelCommand(BotGuildUsers botGuildUsers)
-    {
-        _botGuildUsers = botGuildUsers;
-    }
-    
     private string GetLatestPrivateRoleName(SocketTextChannel socketTextChannel)
     {
         var existingRoles = socketTextChannel.Guild.Roles.Where(x => x.Name.StartsWith(PrivateChannelConstants.PrivateChannelPrefix)).ToList();
@@ -31,7 +27,7 @@ public class CreatePrivateChannelCommand : BaseCommand<NoCommandParameters>
         if (socketSlashCommand.User is not SocketGuildUser user)
             return;
 
-        var botUser = _botGuildUsers[user.Guild.Id];
+        var botUser = botGuildUsers[user.Guild.Id];
         var botRole = botUser.Roles.First(x => x.IsManaged);
         
         if (socketSlashCommand.Channel is SocketTextChannel socketTextChannel)

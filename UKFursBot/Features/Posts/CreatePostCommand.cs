@@ -6,20 +6,15 @@ using UKFursBot.Context;
 using UKFursBot.Entities;
 
 namespace UKFursBot.Features.Posts;
-public class CreatePostCommand : BaseCommand<CreatePostCommandParameters>
+public class CreatePostCommand(UKFursBotDbContext dbContext, SocketMessageChannelManager socketMessageChannelManager)
+    : BaseCommand<CreatePostCommandParameters>(socketMessageChannelManager)
 {
-    private readonly UKFursBotDbContext _dbContext;
-    private readonly SocketMessageChannelManager _socketMessageChannelManager;
+    private readonly SocketMessageChannelManager _socketMessageChannelManager = socketMessageChannelManager;
 
     public override string CommandName => "create_post";
     public override string CommandDescription => "Starts the process for creating a new post.";
     protected override bool IsEphemeral => false;
 
-    public CreatePostCommand(UKFursBotDbContext dbContext,SocketMessageChannelManager socketMessageChannelManager)
-    {
-        _dbContext = dbContext;
-        _socketMessageChannelManager = socketMessageChannelManager;
-    }
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, CreatePostCommandParameters commandParameters)
     {
         var followUpMessage = await FollowupAsync($"Starting the process for creating a new post.  Reply to this message with the content of the message you want placed in <#{commandParameters.Channel.Id}>");
@@ -29,7 +24,7 @@ public class CreatePostCommand : BaseCommand<CreatePostCommandParameters>
             return;
         }
 
-        _dbContext.CreatePosts.Add(new CreatePost()
+        dbContext.CreatePosts.Add(new CreatePost()
         {
             CreatePostResponseToken = followUpMessage.Id,
             State = CreatePostState.Creating,

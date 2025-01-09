@@ -3,15 +3,11 @@ using Discord.WebSocket;
 using UKFursBot.Commands;
 
 namespace UKFursBot.Features.Diagnostics;
-public class SetupStatusChecklistCommand : BaseCommand<NoCommandParameters>
+public class SetupStatusChecklistCommand(
+    IEnumerable<IDiagnosticsCheck> diagnosticsChecks,
+    SocketMessageChannelManager socketMessageChannelManager)
+    : BaseCommand<NoCommandParameters>(socketMessageChannelManager)
 {
-    private readonly IEnumerable<IDiagnosticsCheck> _diagnosticsChecks;
-
-    public SetupStatusChecklistCommand(IEnumerable<IDiagnosticsCheck> diagnosticsChecks)
-    {
-        _diagnosticsChecks = diagnosticsChecks;
-    }
-
     public override string CommandName => "diagnostics";
     public override string CommandDescription => "Run diagnostics checks to see if anything is set up incorrectly.";
 
@@ -20,7 +16,7 @@ public class SetupStatusChecklistCommand : BaseCommand<NoCommandParameters>
         var response = new RichTextBuilder()
             .AddHeading2("Diagnostics Checks");
         
-        foreach (var diagnosticsCheck in _diagnosticsChecks)
+        foreach (var diagnosticsCheck in diagnosticsChecks)
         {
             var result = diagnosticsCheck.PerformCheck();
 

@@ -9,9 +9,9 @@ namespace UKFursBot;
 
 public static class SlashCommandBuilderExtensions
 {
-    public static SlashCommandBuilder BuildOptionsFromParameters(this SlashCommandBuilder builder, ISlashCommand command, IServiceProvider serviceProvider)
+    public static SlashCommandBuilder BuildOptionsFromParameters(this SlashCommandBuilder builder, Type commandType, SlashCommandParameterOptionStrategyResolver slashCommandParameterOptionStrategyResolver)
     {
-        var commandBaseType = command.GetType().BaseType;
+        var commandBaseType = commandType.BaseType;
         if (commandBaseType == null || commandBaseType.Name != typeof(BaseCommand<>).Name)
             throw new Exception($"Cannot get base type.  All commands must inherit {typeof(BaseCommand<>).FullName}");
         
@@ -20,11 +20,7 @@ public static class SlashCommandBuilderExtensions
             return builder;
 
         var commandProperties = commandPropertiesType.GetProperties();
-
-        var slashCommandParameterOptionStrategyResolver = serviceProvider.GetRequiredService<SlashCommandParameterOptionStrategyResolver>();
-        
-        
-        
+                
         foreach (var propertyInfo in commandProperties)
         {
             ISlashCommandParameterOptionStrategy? resolver;

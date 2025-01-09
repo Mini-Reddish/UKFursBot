@@ -4,33 +4,26 @@ using UKFursBot.Commands;
 using UKFursBot.Context;
 
 namespace UKFursBot.Features.ModMail;
-public class SendModMailCommand : BaseCommand<SendModMailCommandParameters>
+public class SendModMailCommand(
+    UKFursBotDbContext dbContext,
+    DiscordSocketClient socketClient,
+    SocketMessageChannelManager socketMessageChannelManager)
+    : BaseCommand<SendModMailCommandParameters>(socketMessageChannelManager)
 {
-    private readonly UKFursBotDbContext _dbContext;
-    private readonly DiscordSocketClient _socketClient;
-    private readonly SocketMessageChannelManager _messageChannelManager;
-
-    public SendModMailCommand(UKFursBotDbContext dbContext, DiscordSocketClient socketClient, SocketMessageChannelManager messageChannelManager)
-    {
-        _dbContext = dbContext;
-        _socketClient = socketClient;
-        _messageChannelManager = messageChannelManager;
-    }
-
     public override string CommandName => "modmail";
     public override string CommandDescription => "Send a message to the moderators.";
 
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, SendModMailCommandParameters commandParameters)
     {
-        var botConfig = _dbContext.BotConfigurations.First();
+        var botConfig = dbContext.BotConfigurations.First();
 
         if (botConfig.ModMailChannel == 0)
         {
-            await _messageChannelManager.SendLoggingWarningMessageAsync("Modmail channel has not been set.");
+            await socketMessageChannelManager.SendLoggingWarningMessageAsync("Modmail channel has not been set.");
             return;
         }
 
-        var modMailChannel = await _socketClient.GetTextChannelAsync(botConfig.ModMailChannel);
+        var modMailChannel = await socketClient.GetTextChannelAsync(botConfig.ModMailChannel);
 
         var content = new RichTextBuilder()
             .AddHeading2($"Message from {socketSlashCommand.User.Username} | <@{socketSlashCommand.User.Id}>")
@@ -48,7 +41,7 @@ public class SendModMailCommand : BaseCommand<SendModMailCommandParameters>
         }
         else
         {
-            await _messageChannelManager.SendLoggingWarningMessageAsync("Modmail channel is not valid.  A user attempted to communicate using the modmail command.");
+            await socketMessageChannelManager.SendLoggingWarningMessageAsync("Modmail channel is not valid.  A user attempted to communicate using the modmail command.");
         }
     }
 }

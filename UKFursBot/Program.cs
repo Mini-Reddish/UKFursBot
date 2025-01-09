@@ -8,6 +8,7 @@ using UKFursBot.Commands;
 using UKFursBot.Context;
 using UKFursBot.Entities;
 using UKFursBot.HandlerInterfaces;
+using UKFursBot.SlashCommandParameterOptionStrategies;
 
 namespace UKFursBot;
 
@@ -188,7 +189,7 @@ class Program
                 var guildCommand = new SlashCommandBuilder()
                     .WithName(commandName.ToLowerInvariant())
                     .WithDescription(commandDescription)
-                    .BuildOptionsFromParameters(slashCommand, _services)
+                    .BuildOptionsFromParameters(slashCommand.GetType(), _services.GetRequiredService<SlashCommandParameterOptionStrategyResolver>())
                     .WithDefaultPermission(false)
                     .Build();
                 

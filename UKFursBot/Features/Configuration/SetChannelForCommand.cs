@@ -5,15 +5,9 @@ using UKFursBot.Context;
 using UKFursBot.Entities;
 
 namespace UKFursBot.Features.Configuration;
-public class SetChannelForCommand : BaseCommand<SetChannelForCommandParameters>
+public class SetChannelForCommand(UKFursBotDbContext dbContext, SocketMessageChannelManager socketMessageChannelManager)
+    : BaseCommand<SetChannelForCommandParameters>(socketMessageChannelManager)
 {
-    private readonly UKFursBotDbContext _dbContext;
-
-    public SetChannelForCommand(UKFursBotDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public override string CommandName => "admin_set_channel_for";
     public override string CommandDescription => "Set the channel setting to output in the specified channel";
 
@@ -25,11 +19,11 @@ public class SetChannelForCommand : BaseCommand<SetChannelForCommandParameters>
             return;
         }
         
-        var botConfiguration = _dbContext.BotConfigurations.FirstOrDefault();
+        var botConfiguration = dbContext.BotConfigurations.FirstOrDefault();
         bool isCreating = false;
         if (botConfiguration == null)
         {
-            var result = await _dbContext.BotConfigurations.AddAsync(new BotConfiguration());
+            var result = await dbContext.BotConfigurations.AddAsync(new BotConfiguration());
             botConfiguration = result.Entity;
             isCreating = true;
         }
@@ -58,7 +52,7 @@ public class SetChannelForCommand : BaseCommand<SetChannelForCommandParameters>
 
         if (isCreating == false)
         {
-            _dbContext.BotConfigurations.Update(botConfiguration);
+            dbContext.BotConfigurations.Update(botConfiguration);
         }
         
         var messageContents = new RichTextBuilder()

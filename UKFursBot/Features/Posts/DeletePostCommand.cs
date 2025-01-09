@@ -4,16 +4,10 @@ using UKFursBot.Commands;
 using UKFursBot.Context;
 
 namespace UKFursBot.Features.Posts;
-public class DeletePostCommand : BaseCommand<DeletePostCommandParameters>
+public class DeletePostCommand(UKFursBotDbContext dbContext, SocketMessageChannelManager socketMessageChannelManager)
+    : BaseCommand<DeletePostCommandParameters>(socketMessageChannelManager)
 {
-    private readonly UKFursBotDbContext _dbContext;
-    private readonly SocketMessageChannelManager _socketMessageChannelManager;
-
-    public DeletePostCommand(UKFursBotDbContext dbContext,SocketMessageChannelManager socketMessageChannelManager)
-    {       
-        _dbContext = dbContext;
-        _socketMessageChannelManager = socketMessageChannelManager;
-    }
+    private readonly SocketMessageChannelManager _socketMessageChannelManager = socketMessageChannelManager;
 
     public override string CommandName => "delete_post";
     public override string CommandDescription => "Deletes the post with the given Post ID";
@@ -21,7 +15,7 @@ public class DeletePostCommand : BaseCommand<DeletePostCommandParameters>
     protected override async Task Implementation(SocketSlashCommand socketSlashCommand, DeletePostCommandParameters commandParameters)
     {
         var createdPostForDeleting =
-            await _dbContext.CreatePosts.SingleOrDefaultAsync(x => x.MessageId == commandParameters.PostId);
+            await dbContext.CreatePosts.SingleOrDefaultAsync(x => x.MessageId == commandParameters.PostId);
         if (createdPostForDeleting == null)
         {
             await FollowupAsync("Post not found in Database");
@@ -31,7 +25,7 @@ public class DeletePostCommand : BaseCommand<DeletePostCommandParameters>
         if (messageChannel == null)
         {
             await _socketMessageChannelManager.SendLoggingErrorMessageAsync($"Could not find message channel with ID: {createdPostForDeleting.ChannelId}.  Removing from the database...");
-            _dbContext.CreatePosts.Remove(createdPostForDeleting);
+            dbContext.CreatePosts.Remove(createdPostForDeleting);
             return;
         }
 

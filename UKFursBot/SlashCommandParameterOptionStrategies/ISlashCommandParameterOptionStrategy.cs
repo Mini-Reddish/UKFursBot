@@ -1,4 +1,5 @@
 using System.Reflection;
+using Discord;
 using SlashCommandBuilder = Discord.SlashCommandBuilder;
 
 namespace UKFursBot.SlashCommandParameterOptionStrategies;
